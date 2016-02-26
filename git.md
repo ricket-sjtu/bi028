@@ -48,7 +48,9 @@ git commit -m "Delete README.md"
 git checkout -- README.md
 ```
 
-
-
-
-##
+## 9. submit to online repository
+```bash
+#git remote rm bi028
+git remote add bi028 git@git.com:ricket-sjtu/BI028
+git push -u bi028 master
+```
