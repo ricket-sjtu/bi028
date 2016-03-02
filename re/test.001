@@ -1,0 +1,6 @@
+mysql:x:89:89::/var/lib/mysql:/bin/false
+aaa:x:1001:1001::/home/aaa:/bin/bash
+ba:x:1002:1002::/home/zhangy:/bin/bash
+test:x:1003:1003::/home/test:/bin/bash
+@bio:*:1004:1004::/home/test:/bin/bash
+policykit:x:102:1005:Po:/home/polichkit:/bin/nologin

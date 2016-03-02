@@ -1,0 +1,16 @@
+root /bin/bash
+bin /bin/false
+DADddd /bin/false
+mail /bin/false
+ftp /bin/false
+nobody /bin/false
+bio /bin/bash
+http /bin/false
+dbus /bin/false
+hal /bin/false
+mysql /bin/false
+aaa /bin/bash
+ba /bin/bash
+test /bin/bash
+@bio /bin/bash
+policykit /bin/nologin

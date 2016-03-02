@@ -1,0 +1,16 @@
+root /root
+bin /bin
+DADddd /sbin
+mail /var/spool/mail
+ftp /home/ftp
+nobody /
+bio /home/bio
+http /srv/http
+dbus /
+hal /
+mysql /var/lib/mysql
+aaa /home/aaa
+ba /home/zhangy
+test /home/test
+@bio /home/test
+policykit /home/polichkit
