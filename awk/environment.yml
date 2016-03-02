@@ -1,0 +1,7 @@
+name: awk-lessons
+dependencies:
+- pip
+- jupyter
+- yaml
+- pip:
+    - bash_kernel
