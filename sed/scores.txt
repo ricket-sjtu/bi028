@@ -1,0 +1,8 @@
+name marks grade
+abc 50.5 CB
+def 45 CC
+ghhi 55 CA
+jkl 85 A
+mno 75 BA
+pqr 77 BA
+stu 89 A
