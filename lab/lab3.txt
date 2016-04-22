@@ -1,0 +1,174 @@
+﻿
++*****************************************+
+*** BASH REVIEW                           *
+******************************************+
+
+1. What is Shebang? #!/bin/bash
+
+2. Arithmetic Computation
+(1) expr: expr 3 + 5
+expr 3.5 + 5 2> /etc/null
+echo $? 
+(2) let: x=10; let "y = x + 5"; echo $y;
+(3) ((x++))
+(4) $[]
+(5) bc
+user@host ~$ x=3.567
+user@host ~$ echo "scale=2;$x" | bc
+user@host ~$ echo "sqrt($x)" | bc -l
+
+3. test
+(1) [ ]
+(2) [[ ]]
+(3) (( ))
+(4) test
+
+4. structures
+(1) if...then...elif...then...else....fi
+(2) while... do ... done
+(3) until... do ... done
+(4) case... );; );; *);; esac
+(5) for x in ... do ... done
+for i in {1..10}; do echo $i; done
+(6) for ((expr1;expr2;expr3)) do ... done
+(7) expression && commands
+(8) expression || commands
+
+5. quotes
+(1) ""
+(2) ''
+(3) ``
+
+6. running results
+(1) x=$(ls -l)
+(2) x=`ls -l`
+
+
+7. assignment
+y=${x:-5}
+echo $y
+echo $x
+y=${x:=10}
+echo $x
+echo $y
+y=${x:+13}
+echo $x
+echo $y
+
+##############################
+# y=${x:-10} equivalent to
+##############################
+if [[ -n $x ]]; then
+	y=$x
+else
+	y=10
+fi
+
+##############################
+# y=${x:=10} equivalent to
+##############################
+if [[ -n $x ]]; then
+	y=$x
+else
+	x=10
+	y=10
+fi
+
+##############################
+# y=${x:+10} equivalent to
+##############################
+if [[ -n $x ]]; then
+	y=10
+else
+	x=10
+	y=10
+fi
+
+8. substring
+(1) %%
+(2) %
+(3) ##
+(4) #
+(5) ${x:3:4}
+
+9. positional parameters
+(1) $@
+(2) $*
+(3) $0
+(4) $1
+
+10. indirect variable expansion
+user@host ~$ x='abc'
+user@host ~$ abc=10
+user@host ~$ echo ${!x}
+
+
+
+BASH上机题：注意对于输入的命令行参数进行检查（你可以设置自己的错误号码表）
+=====================================================================================
+
+1. 给定一个分数，根据输入的成绩，输出其成绩等级（90+: A; 70-90: B; 60-70: C; 60-: F）
+user@host ~ $ ./scorelev.sh 98
+A
+user@host ~ $ ./scorelev.sh 45
+F
+
+（提示：使用case，还有必须判断该输入成绩的范围是否合理，当然if也可以）
+
+2. 写一个bash脚本，根据输入的目录名，对目录下的“普通文件”进行备份、打包
+
+3. 课上我们介绍过如何去处理一个字符串，获取其中特定的子串，这里需要大家写一个函数，
+解析输入的格式为"12/28/2012"这种日期的字符串，分别获取年份、月份、日，并将其处理成
+另外一种写法进行输出。
+##### 数组方法 #####
+# 日期变量赋值
+day="12/28/2012"
+# 设定分隔符
+IFS="/"
+# 声明数组变量
+declare -a dd
+dd=($day)
+# 用分隔符转换为数组
+declare -p dd
+# 输出年
+echo "Year: ${dd[2]}"
+echo "Month: ${dd[1]}"
+echo "Day: ${dd[0]}"
+
+
+4. 针对"/etc/passwd"文件，写出所有默认登录shell为/bin/bash的用户，并输出下面的语句。
+root is bash user
+bio is bash user
+bioinfo is bash user
+(提示：使用while/if/read重定向实现)
+
+5. 从键盘输入三个数a、b、c，并输出其中的最大值和最小值，可以在一行上输入，也可以分别获取。
+（提示：注意read的用法，或者直接在命令行输入获取）
+
+6. 写一个函数，判断输入的值是否为整数，并计算给定整数阶乘（factorial）
+
+7. 计算1970年1月1日0时0分至当前时间的长度，以秒为单位。计算任意给定两时间之间的
+天数。（提示：date命令获取当前时间）
+
+8. 有两个目录，其中一个目录是另外一个的拷贝（备份），根据其所有对应文件的差别对其制作
+出补丁（patch），全部输出到一个补丁文件"DATE.patch"中，其中DATE为当前的日期，比如
+20130327.patch。
+
+9. 假设现在有一个文本文件，能不能用一个bash脚本，将其中的所有大写字母转换为小写字母，
+并将其写回该文件？
+
+
+10. 将目录下的所有.c文件更名为.h文件。
+
+11. 写一个函数sd.sh，计算下面文件中的数值的平均值和标准偏差。
+# test.dat
+12.33
+11.67
+12.16
+13.01
+12.56
+下面是运行示例：
+user@host ~$ ./sd.sh test.dat
+Number of data points in "test.dat" = 5
+Arithmetic mean (mu) = 12.1234
+Standard Deviation (sigma) = .3456 
