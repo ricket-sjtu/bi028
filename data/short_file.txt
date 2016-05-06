@@ -1,0 +1,2 @@
+this short file has two lines
+it is used in the example code
