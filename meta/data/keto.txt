@@ -1,0 +1,11 @@
+study,Ee,Ne,Ec,Nc,blind
+Chay 1992,1,10,6,10,Adequate blinding
+Rackham 1989,31,68,38,65,Adequate blinding
+Van Asperen 1992,16,52,19,51,Adequate blinding
+Croce 1995,19,39,17,36,Method unclear
+de Benedictis 1990,7,34,35,41,Method unclear
+Longo 1986,10,18,15,18,Method unclear
+Montoya 1988,6,20,14,20,Method unclear
+Mulhern 1982,6,16,8,15,Method unclear
+Salmon,8,28,16,34,Method unclear
+Spicak 1983,9,25,20,25,Method unclear
