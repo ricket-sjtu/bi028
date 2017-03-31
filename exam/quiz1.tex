@@ -1,0 +1,281 @@
+\documentclass[addpoints,12pt,answers]{exam}
+
+\usepackage{color}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{CJKutf8}
+
+\newcommand{\tf}[1][{}]{%
+	\fillin[#1][0.25in]%
+}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+\setlength{\parskip}{0.1 in}
+
+\checkboxchar{$\Box$}
+\checkedchar{$\blacksquare$}
+\CorrectChoiceEmphasis{\color{red}}
+
+\pagestyle{headandfoot}
+\runningheadrule
+\firstpageheader{BI296}{Quiz 1}{March 10, 2017}
+\runningheader{BI296}
+			{Quiz 1, Page \thepage\ of \numpages}
+			{March 10, 2017}
+\firstpagefooter{}{}{}
+\runningfooter{}{}{}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+\begin{center}
+\fbox{\fbox{\parbox{5.5in}{\centering
+	如果预留空间不足，请将答案写到试卷背面。}}}
+\end{center}
+
+\vspace{0.1in}
+
+\makebox[\textwidth]{学号: \enspace\hrulefill}
+
+\vspace{0.1in}
+
+\makebox[\textwidth]{姓名: \enspace\hrulefill}
+
+\begin{center}
+	\pointtable[h][pages]
+\end{center}
+
+
+\qformat{\textbf{Question \thequestion}\quad (\thepoints)\hfill}
+
+\section{简答题}
+
+\begin{questions}
+
+\question[10]
+将下列数值在不同的进制之间进行转换：
+\begin{table}[h]
+\center
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\tabincell{c}{decimal\\(10进制)} & \tabincell{c}{binary\\(2进制)} 
+& \tabincell{c}{octal\\(8进制)} & \tabincell{c}{hexadecimal\\(16进制)} 
+& \tabincell{c}{septenary\\(7进制)} \\
+\hline
+235.50d & & & & \\
+\hline
+& 01101110 & & & \\
+\hline
+& & 0347 & & \\
+\hline
+& & & 0x34A2 & \\
+\hline
+\end{tabular}
+\end{table}
+
+
+\question[10]
+IEEE表示单精度浮点数占据32位，分别用来表示符号位、阶码和尾数，其基本格式是：
+
+\begin{table}[htbp]
+\begin{tabular}{|l|l|l|}
+\hline
+$S$: 1-bit & $P$: 8-bit & $M$: 23-bit\\
+\hline
+\end{tabular}
+\end{table}
+
+其中$S$是符号位（0为正数，1为负数），$P$是阶码（移码，与补码除了符号位相反之外，
+其它位完全相同，偏移量为127），$M$是尾数（原码）。其数值的计算公式是：
+$$
+(-1)^{S} \times 2^{P-127} \times 1.M
+$$
+
+这里所谓的尾数就是二进制浮点数的小数部分，其整数位为1。
+
+那么，单精度数可以表示的数值范围是什么？其精度是什么？
+
+\begin{solution}
+\vspace{2in}
+
+\end{solution}
+
+
+\question[10]
+请为乌有国国王出个主意：有128桶酒，其中有1桶是毒酒；48小时候要举行宴会，
+人喝了毒酒之后的11-12小时内将会死去；国王决定用囚犯来试酒，而且不介意有
+多少囚犯会死。你能否用最少的囚犯来测试哪一桶才是毒酒。请问至少需要多少
+囚犯才能保证找出毒酒？最少可能会有多少囚犯因此而死？
+
+\begin{solution}
+\vspace{1in}
+\end{solution}
+
+
+\question
+针对Linux中的文件权限管理，回答下列问题
+\begin{parts}
+\part[5]
+我们用\lstinline{ls -l}查看文件\texttt{/usr/bin/locate}，发现其权限为：
+\begin{quote}
+\texttt{rwx-{}-s-{}-x}
+\end{quote}
+请问这里包含哪些权限，分别阐明其功能。
+\begin{solution}
+\vspace{1in}
+\end{solution}
+
+\part[5]
+对于目录\texttt{/var/tmp}，其权限位是什么，有什么特殊含义？
+\begin{solution}
+\vspace{1in}
+\end{solution}
+
+\end{parts}
+
+\question[10]
+为什么32位操作系统最大只能支持4GB的内存？64位操作系统最大能支持的内存是多大？
+\begin{solution}
+\vspace{1in}
+\end{solution}
+
+
+\question[10]
+能否让同组用户对某一个目录具有完全相同的权限？如果能，请写出实现的细节。
+\begin{solution}
+\vspace{1in}
+\end{solution}
+
+\end{questions}
+
+\newpage
+
+\section{选择题}
+
+\begin{questions}
+\question[2]
+深度学习可能是目前最为火热的机器学习方法。在训练深度神经网络时，需要用到大量的矩阵乘积计算。
+假设我们有三个稠密矩阵$\mathbf{A} \in \mathbb{R}^{m \times n}, \mathbf{B} \in \mathbb{R}^{n 
+\times p}$和$\mathbf{C} \in \mathbb{R}^{p \times q}$，且$m < n < p < q$下面哪个乘积
+的组合计算能最快得到结果？在边上注明原因。
+\begin{choices}
+\choice $\mathbf{A(BC)}$
+\choice $\mathbf{(AB)C}$
+\choice $\mathbf{(AC)B}$
+\choice 没有差别
+\end{choices}
+\answerline
+
+\question[2]
+下面哪个系统不是类UNIX操作系统？
+\begin{choices}
+\choice MacOS
+\choice Ubuntu
+\choice Fedora
+\choice Windows
+\end{choices}
+\answerline
+
+\question[2]
+下面的名人当中，谁才是GNU项目的创始人？
+\begin{choices}
+\choice Linus Torvalds
+\choice Ken Thompson
+\choice Dennis Ritchie
+\choice Richard Stallman
+\end{choices}
+\answerline
+
+\question[2]
+下面列表中，哪个不是Linux内核的特征？
+\begin{choices}
+	\choice free and open-source
+	\choice	multi-task and multi-user
+	\choice under GNU GPL
+	\choice All the distributions are free of charge.
+\end{choices}
+\answerline
+
+\question[2]
+下面哪些命令，可以输出文件的3-20行内容？
+\begin{choices}
+	\choice \lstinline{sed '3,+20p' filename}
+	\choice \lstinline{head -20 filename | tail -n 18}
+	\choice \lstinline!awk '3,20{ print $0 }' filename!
+	\choice \lstinline{cat filename | grep 3 20}
+\end{choices}
+\answerline
+
+\question[2]
+下列数值最大的是？
+\begin{choices}
+	\choice (10010101)\_2
+	\choice (227)\_8
+	\choice (96)\_16
+	\choice (143)\_10
+\end{choices}
+\answerline
+
+\question[2]
+如果78+78=123成立，则应该采用的是哪种进制？
+\begin{choices}
+	\choice 11
+	\choice 12
+	\choice 13
+	\choice 14
+	\choice 15
+\end{choices}
+\answerline
+
+
+\question[2]
+八进制数256，转化位7进制数是？
+\begin{choices}
+	\choice 356
+	\choice 346
+	\choice 336
+	\choice 338
+\end{choices}
+\answerline
+
+\question[2]
+n从1开始，每个操作可以选择对n加1或者对n加倍，若想获得整数2013，最少需要多少次操作？
+\begin{choices}
+	\choice 24
+	\choice 21
+	\choice 18
+	\choice 19
+\end{choices}
+\answerline
+
+
+\question[2]
+CPU的高速缓存指的是？
+\begin{choices}
+	\choice CPU多个内核之间传输数据的通道
+	\choice 加快CPU访问内存速度的存储器
+	\choice 加快磁盘读写速度的存储器
+	\choice 加快计算机周边设备与内存传输数据的部件
+\end{choices}
+\answerline
+\end{questions}
+
+\newpage
+
+\section{填空题}
+
+\begin{questions}
+	\question[2] 16-bit无符号整数的取值范围是\fillin[]; 有符号整数的取值范围是\fillin[][1in]。
+	\question[2] 某台主机的IP为192.168.1.112， 子网掩码是255.255.255.192，则其所在的子网的IP范围是\fillin[][1in]。
+	\question[2] Socket连接通信位于OSI网络协议结构的\fillin[]层。
+	\question[2] 文件系统目录中\texttt{/usr}中的\texttt{usr}是\fillin[][1in]的缩写。
+	\question[2] 文件\texttt{/dev/sda}是特殊的\fillin[][1in]文件；而\texttt{/dev/null}是特殊的\fillin[][1in]文件。
+	\question[2] 如果需要将某用户新文件的默认权限设置为600，则应该运行\fillin[][1in]。
+	\question[2] 需要寻找所有根目录下的所有Named pipe文件，需要运行命令\fillin[][1in]。
+	\question[2] 要输出库函数\texttt{vprintf}的帮助信息，需要运行\fillin[][1in]；该帮助为手册的第\fillin[]节。
+	\question[2] 命令\texttt{ls -l}默认输出的时间戳是\fillin[]，其意义是\fillin[][2in]。
+	\question[2] 目录\texttt{/etc}存放的是\fillin[][2in]；其中\texttt{/etc/shadow}中存放的是\fillin[][2in]。
+\end{questions}
+
+\end{CJK*}
+\end{document}

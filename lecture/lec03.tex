@@ -1,0 +1,1154 @@
+\documentclass[red]{beamer}
+
+\mode<presentation>{
+%\usetheme{Goettingen}
+\usetheme{Madrid}
+\usecolortheme{default}
+}
+
+\usepackage{CJK}
+\usepackage{graphicx}
+\usepackage{amsmath, amsopn}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{url}
+\usepackage{color}
+\usepackage{times}
+\usepackage{xcolor}
+\usepackage[formats]{listings}
+\lstset{
+keywordstyle=\color{blue!70}\bfseries,
+basicstyle=\color{black}\ttfamily\scriptsize,
+commentstyle=\ttfamily\color{red},
+showspaces=false,
+showstringspace=false,
+showtabs=false,
+columns=fullflexible,
+frame=true,
+rulesepcolor=\color{red!20!green!20!blue!20},
+breaklines=true,
+numbersep=5pt}
+
+\lstdefineformat{awk}
+{
+  \{=\newline\string\newline\indent,%
+  \}=\newline\noindent\string\newline,%
+  ;=[\ ]\string\space,%
+}
+
+\newcommand*{\caret}{%
+  \begingroup
+    \fontencoding{T1}%
+    \fontfamily{qcr}% TeX Gyre Cursor
+    %\fontfamily{pcr}% Courier
+    \selectfont
+    \string^%
+  \endgroup
+}
+\lstdefinestyle{caret}{
+  basicstyle=\ttfamily\color{blue},
+  literate={^}{\caret}{1},
+}
+\newcommand*{\lstverb}{\lstinline[style=caret]}
+
+\setbeamertemplate{itemize/enumerate/description body begin}{\footnotesize}
+\setbeamertemplate{itemize/enumerate/description subbody begin}{\scriptsize}
+
+\title[BI296-Lec03]{\tiny{BI296: Linux and Shell Programming}\\
+\Large{Lecture 03: Regular Expression}}
+\author[Maoying Wu]{Maoying,Wu\\
+{\scriptsize ricket.woo@gmail.com}}
+\institute[CBB] % (optional, but mostly needed)
+{
+  \inst{}
+  Dept. of Bioinformatics \& Biostatistics\\
+  Shanghai Jiao Tong University
+}
+\date{Spring, 2017}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Next we will talk about ...}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+\frame{\titlepage}
+
+\begin{frame}[containsverbatim]
+\frametitle{Quick Recaps}
+\begin{itemize}
+	\item File system: \lstinline{man hier, fdisk, du, df}
+	\item File permissions: \lstinline{chmod, chown, chattr}, r, w, x, s, t
+	\item File information: \lstinline{ls, file, stat}
+	\item File operation: \lstinline{cp, mv, rm, touch, vim, cat/tac/less/more, head/tail}
+	\item File types: \lstinline{ln}, -, d, l, c, b, s, p
+	\item Process control: \lstinline{ps, bg, fg, jobs, nohup, CTRL+z, CTRL+c}
+	\item Redirection and Piping
+\end{itemize}
+\end{frame}
+
+\section{Regular Expression}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Lecture Outline}
+\begin{itemize}
+	\item Regular Expression (正则表达式)
+	\begin{itemize}
+		\item Notations （概念）
+		\item Types of REGEX
+		\item Metacharacters (元字符)
+		\item Group Capturing (组捕获) and Backreference（后向引用）
+		\item Non-capturing groups (非捕获组) and zero-length assertions (零宽断言)
+		\item Cases (案例分析)
+	\end{itemize}
+	\vspace{0.2in}
+	\item Applications of REGEX（正则表达式应用）
+	\begin{itemize}
+		\item \lstinline{grep}: text matching
+		\item \lstinline{sed}: streaming editor
+		\item \lstinline{awk}: mini programming environment
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Regular expression: Introduction}
+
+\begin{frame}[containsverbatim]
+\frametitle{Regular expression: Notations}
+\footnotesize
+\begin{description}
+	\item[Regular expression (正则表达式)]\hfill \\
+		Also called patter matching (模式匹配), used for matching, searching, 
+		and replacing the given text pattern in a given set of strings.
+	\item[String Pattern (字符串模式)] \hfill \\
+		A string which can represent a set of possible strings.
+	\item[Metacharacter (元字符)] \hfill \\
+		Some special characters used for reprenting some characters.
+	\item[Greedy/Lazy matching (贪婪/惰性匹配)] \hfill \\
+		Finding the maximum/minimum matching (最大/最小匹配方式).
+\end{description}
+\centering
+\begin{block}{Examples}
+\begin{itemize}
+	\item \lstinline{ps -aux | grep mysql}
+	\item \lstinline{sed -i 's/^$//g' filename}
+	\item \lstinline|awk '/^ATOM/{print $2}' 1xhu.pdb|
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{History of REGEX}
+\begin{itemize}
+	\item 1943: Warren McCulloch and Walter Pitts - Nervous system models 
+		(i.e., how a machine could be built like a brain)
+	\item 1956: Stephen Kleene describes these models with an algebra 
+		called "regular sets" and creates a notation to express them 
+		called "regular expressions"
+	\item 1968: Ken Thompson implements regular expressions in \texttt{ed}:
+	\begin{itemize}
+		\item \texttt{g/REGEX/p}: g - globally, p - print
+		\item Global Regular Expression Print: \texttt{grep}
+		\item Became widely used in \texttt{awk, vim, emacs}, etc.
+	\end{itemize}
+	\item 1986: POSIX (Portable Operating System Interface) - standard
+	\begin{itemize}
+		\item \textcolor{blue}{Basic Regular Expressions (BREs)}
+		\item \textcolor{blue}{Extended Regular Expressions (EREs)}
+	\end{itemize}	
+	\item 1986: Henry Spencer releases a \texttt{regex} library written in C.
+	\item 1987: Larry Wall released Perl
+	\begin{itemize}
+		\item Used \texttt{regex} library, and added more powerful features
+		\item Perl-Compatible Regular Expression (PCRE)
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Conventions and Modes}
+\begin{block}{\centering Conventions (传统表示方法)}
+\begin{itemize}
+	\item \texttt{grep}: 'regex' (enclosed in single quotes)
+	\item \texttt{sed}: /regex/ (encloded in forward slashes)
+	\item \texttt{awk}: /regex/ (enclosed in forward slashes)
+\end{itemize}
+\end{block}
+\begin{block}{\centering Modes (工作模式)}
+\begin{itemize}
+	\item \textbf{REGULAR} mode (一般模式): 'regex', /regex/
+	\item \textbf{MULTILINE} mode (多行模式): '(?m)regex'(\texttt{grep -Pz}), /regex/m (\texttt{sed -z})
+	\item \textbf{DOT\_AS\_ALL} mode (点全匹配模式): '(?s)regex' (\texttt{grep -Pz}), /regex/s
+	\item \textbf{CASE\_INSENSITIVE} mode (大小写不敏感模式): '(?i)regex' (\texttt{grep -P}), /regex/i
+	\item \textbf{GLOBAL} mode (全局模式): /regex/g (\texttt{sed}), /regex/g
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Literal Characters: Plain text}
+\begin{itemize}
+	\item Strings
+	\begin{itemize}
+		\item \texttt{/gene/} matches "gene";
+		\item \texttt{/gene/} also matches the first four letters of "generation";
+		\item Similar to searching in a word processor
+	\end{itemize}
+	\item Case-sensitive (by default)
+	\begin{itemize}
+		\item \texttt{gene} does not match "Generation";
+	\end{itemize}
+	\item Non-global matching will prefer the leftmost match.
+	\begin{itemize}
+		\item \texttt{/cat/} matches "The cow, camel and \textcolor{red}{cat} 
+			communi\textcolor{blue}{cat}e with each other."
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Position Anchors (定位元字符}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{2.0}
+\begin{tabular}{lll}
+\hline
+\textbf{Metachar} & \textbf{Description} & \textbf{Examples}\\
+\hline
+\lstverb|^| & matching the \textcolor{red}{start of a line}. & \lstverb|^ATOM|\\
+\lstverb|$| & matching \textcolor{red}{the end of a line}. & \lstverb|\.$|\\
+\lstverb|\<| & matching the \textcolor{red}{start of a word}. & \lstverb|\<root|\\
+\lstverb|\>| & matching the \textcolor{red}{end of a word}. & \lstverb|root\>|\\
+\lstverb|\b| & matching the \textcolor{red}{boundary of a word}. & \lstverb|\broot\b|\\
+\hline
+\end{tabular}
+\end{table}
+\begin{block}{\centering Note}
+\begin{itemize}
+\scriptsize
+	\item When located not at the starting of the regex, \lstverb|^| has no
+			special meaning.
+	\item Similarly, when not located at the end of the regex, \lstverb|$| has 
+			no special meaning. 
+	\item Here \textcolor{red}{boundary-of-word} means the non-alphanumeric characters.
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Metacharacters (元字符): Characters with special meanings}
+\begin{table}[ht]
+\tiny
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{lll}
+\hline
+\textbf{Metachar} & \textbf{Description} & \textbf{Examples}\\
+\hline
+\lstverb|.| & Any single character except the newline. & \lstverb|atg.ccc.|\\
+\lstverb|.?| & \textbf{0-1 repeats} of the preceding char. & \lstverb|te?a|\\
+\lstverb|.*| & \textbf{0+ repeats} of the preceding char. & \lstverb|te*a|\\
+\lstverb|.+| & \textbf{1+ repeats} of the preceding char. & \lstverb|te*t|\\
+\lstverb|[...]| & \textbf{Positive set}, matching one. & \lstverb|t[aeiou]n|\\
+\lstverb|[^...]| & \textbf{Negative set}, matching one. & \lstverb|t[^ae]n|\\
+\lstverb|(...)| & \textbf{Group} the characters. & \lstverb|atg([actg][actg][actg])+tca|\\
+\lstverb|\1,\2,...| & \textbf{Backreference}. & \lstverb|atg(att)\1acc|\\
+\textcolor{blue}{\texttt{(..|..)}} & \textbf{Alternation}. & \textcolor{blue}{\texttt{(abc|xyz)}}\\
+\lstverb|{m[,[n]]}| & Specifying the number of repeats. & \lstverb|atg([actg]{3}){5,10}tca| \\
+\hline
+\end{tabular}
+\end{table}
+\begin{block}{\centering Note}
+\scriptsize
+\begin{itemize}
+	\item \lstverb|.,?,*,+| keeps their literal meaning when located within a set \lstverb|[.?*+]|
+	\item Sometimes \lstverb|-| has special meaning, like \lstverb|[3-8]| and \lstverb|[a-f]|.
+	\item However \lstverb|-| in \lstverb|[-abcf-]| regains its literal meaning.
+	\item The \lstverb|^| sign in \lstverb|[a^bc]| has no special meaning.
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Repetition Metacharacters}
+\begin{block}{Examples}
+\begin{itemize}
+\scriptsize
+	\item \lstverb|/apples?/| matches "apple" and "apples", but not "applesssss"
+	\item \lstverb|/apples+/| matches "apples" and "applesssss", but not "apple"
+	\item \lstverb|/apples*/| matches "apple", "apples" and also "applesssss"
+	\item \lstverb|\d\d\d\d?| matches numbers with 3-4 digits.
+	\item \lstverb|\d\d\d\d*| matches numbers with 3 or more digits.
+	\item \lstverb|\d\d\d\d+| matches numbers with 4 or more digits.
+	\item \lstverb|colou?r| matches either "color" or "colour".
+	\item \lstverb|\d{4,8}| matches numbers with 4-8 digits.
+	\item \lstverb|\d{4}| matches numbers with exactly 4 digits.
+	\item \lstverb|\d{4,}| matches numbers with at least 4 digits.
+	\item \lstverb|0\d{2,3}-\d{6,8}| matches most Chinese phone numbers.
+\end{itemize}
+\end{block}
+\begin{block}{Support}
+\begin{itemize}
+	\item \lstverb|*| is supported in all regex engines.
+	\item \lstverb|?| and \lstverb|+| are not supported in BREs.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Shorthand Character Sets}
+\begin{table}[ht]
+\footnotesize
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{lll}
+\hline
+\textbf{Shorthand} & \textbf{Meaning} & \textbf{Equivalent}\\
+\hline
+\lstverb|\d| & Digit & \lstverb|[0-9]|\\
+\lstverb|\w| & Word character & \lstverb|[a-zA-Z0-9_]|\\
+\lstverb|\s| & Whitespace & \lstverb|[ \t\r\n]|\\
+\lstverb|\D| & Not digit & \lstverb|[^0-9]|\\
+\lstverb|\W| & Not word character & \lstverb|[^a-zA-Z0-9_]|\\
+\lstverb|\S| & Not whitespace & \lstverb|[^\t\r\n ]|\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Posix Bracket Expressions}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{1.5}
+\begin{tabular}{lll}
+\hline
+\textbf{Class} & \textbf{Meaning} & \textbf{Equivalent}\\
+\hline
+\lstverb|[:alpha:]| & Alphabetic characters & \lstverb|A-Za-z|\\
+\lstverb|[:digit:]| & Numeric characters & \lstverb|0-9|\\
+\lstverb|[:alnum:]| & Alphanumeric characters & \lstverb|A-Za-z0-9|\\
+\lstverb|[:lower:]| & Lowercase alphabetic characters & \lstverb|a-z|\\
+\lstverb|[:upper:]| & Uppercase alphabetic characters & \lstverb|A-Z|\\
+\lstverb|[:punct:]| & Punctuation characters & \\
+\lstverb|[:space:]| & Space characters & \lstverb|\s|\\
+\lstverb|[:blank:]| & Blank characters (space,tab) & \\
+\lstverb|[:print:]| & Printable characters,space & \\
+\lstverb|[:graph:]| & Printable characters,no space & \\
+\lstverb|[:cntrl:]| & Control characters (non-printable) & \\
+\lstverb|[:xdigit:]| & Hexadecimal characters & \lstverb|A-Fa-f0-9|\\
+\hline
+\end{tabular}
+\end{table}
+\begin{itemize}
+\scriptsize
+	\item \textcolor{red}{Correct}: \lstverb|[[:alpha:]]| or \lstverb|[^[:alpha:]]|
+	\item \textcolor{red}{Incorrect}: \lstverb|[:alpha:]| 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Three Versions of REGEX Syntax}
+\begin{itemize}
+\footnotesize
+	\item Basic Regular Expression (BRE，基本正则表达式)
+	\item Extended Regular Expression (ERE，扩展正则表达式)
+	\item Perl-Compatible Regular Expression (PCRE，Perl正则表达式) 
+\end{itemize}
+\begin{block}{\centering\footnotesize BRE vs. ERE vs. PCRE}
+\scriptsize
+\begin{itemize}
+	\item In BRE the meta-characters \lstverb|?|, \lstverb|+|, \lstverb|{|, 
+				\lstverb{|}, \lstverb|(|, and \lstverb|)| give their literal meanings.
+	\item Instead BRE use the backslashed versions \lstverb|\?|, \lstverb|\+|, \lstverb|\{|,  
+				\lstverb{\|},  \lstverb|\(|,  and \lstverb|\)| to represent the special meanings.
+	\item ERE supports all of the above metacharacters.
+	\item PCRE supports lazy matching（惰性匹配）, zero-length assertion（零宽断言） and named 
+			capturing（命名组捕获）.
+	\item \lstinline{grep} uses BRE by default; \lstinline{grep} need to specify the 
+			``-E'' option to enable ERE; \lstinline{grep} need to specify the ``-P'' option 
+			to enable PCRE.
+	\item Both \lstinline{sed} and \lstinline{awk} do not support PCRE. 
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[containsverbatim]
+\frametitle{BRE: Examples}
+\begin{lstlisting}[language=bash]
+# containing, not containing
+grep -e "root" passwd	 
+grep -v -e "root" passwd
+
+# start/end with
+grep -e "^root" passwd
+grep -e "nologin$" passwd
+
+# either... or...
+grep -e "root\|bio" passwd
+grep -e "root" -e "bio" passwd
+
+# repeats, group, backreference
+grep -e "[0-9]\{8\}" passwd
+grep -e "\(root\).*\1" passwd
+grep -e "\(root\|bio\).*\1" passwd
+grep -e "\(o\{2,\}\).*\1" passwd
+grep -e "[^0-9]\([0-9]\{2\}\)\([^0-9]\)\1\2" passwd
+
+# escape characters
+grep -e "\." passwd
+grep -e "[*(0-9[]" passwd
+grep -e "^\(root\).*" passwd
+grep -e "\([aeiou]\)\{2,\}" passwd 
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{ERE: Examples}
+\begin{lstlisting}[language=bash]
+# alternation
+grep -E 'root|bio' passwd
+
+# repeats {}
+grep -E '[0-9]{8}' passwd
+
+# group (), +
+grep -E '(root).+\1' passwd
+grep -E '(root|bio).+\1' passwd
+grep -E '(o{2,}).+\1' passwd
+
+
+grep -E '[^0-9]([0-9]{2})([^0-9])\1\2' passwd
+grep -E 'o+' passwd} 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Capturing Groups (捕获组)}
+\begin{quote}
+\footnotesize
+The stuffs captured by regex enclosed by parentheses. 
+\end{quote}
+\begin{table}[ht]
+\tiny
+\renewcommand\arraystretch{1.5}
+\begin{tabular}{ll}
+\hline
+\textbf{Expressions} & \textbf{Description}\\
+\hline
+\lstverb|(exp)| & \textbf{Non-named capturing group (非命名捕获组)} matching \texttt{exp}\\
+\lstverb|(?<name>exp)| & \textbf{Named-capturing group (命名捕获组)} with name \texttt{name}\\
+\lstverb|(?'name'exp)| & \textbf{Named-capturing group} with name \texttt{name} matching \texttt{exp}\\
+\lstverb|(?:exp)| & \textbf{Non-capturing group (非捕获组)} matching \texttt{exp}\\
+\lstverb|\1,\2,...| & \textbf{Backreference (后向引用)} of the non-named capturing groups\\
+\lstverb|\k<name>| & \textbf{Backreference (后向引用)} of the named capturing group\\
+\lstverb|\k'name'| & \textbf{Backreference (后向引用)} of the named capturing group\\
+\hline
+\end{tabular}
+\end{table}
+\begin{block}{\centering Examples}
+\scriptsize
+\begin{itemize}
+	\item \lstverb{grep -P "^(root).*(?=\1)" /etc/passwd}
+	\item \lstverb{grep -P "^(?<name>root).*(?=\k<name>)" /etc/passwd}
+	\item \lstverb{grep -P "^(?'name'root).*(?=\k'name')" /etc/passwd}
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Zero-Length Assertion (零宽断言)}
+\begin{quote}
+\scriptsize
+a.k.a. \textbf{LOOK-AROUND}, ONLY match the position, but NOT a real string.
+\end{quote}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{2.0}
+\begin{tabular}{ll}
+\hline
+\textbf{Assertions} & \textbf{Description}\\
+\hline
+\lstverb|(?=exp)| & \textbf{positive look-ahead (正向先行断言)}, matching the position before \texttt{exp}\\
+\lstverb|(?!exp)| & \textbf{negative look-ahead (负向先行断言)}, matching the position not before \texttt{exp}\\
+\lstverb|(?<=exp)| & \textbf{positive look-behind (正向后行断言)}, matching the position after \texttt{exp}\\
+\lstverb|(?<!exp)| & \textbf{negative look-behind (负向后行断言)}, matching the position not after \texttt{exp}\\
+\hline
+\end{tabular}
+\end{table}
+\begin{block}{\centering PCRE Examples}
+\textcolor{red}{Note}: The \texttt{exp} in look-behind assertion should have fixed length.
+\scriptsize
+\begin{itemize}
+	\item \lstverb{echo "adhd" | grep -P "(?<=h)d" }
+	\item \lstverb|grep -P "(?<=/)root" /etc/passwd|
+	\item \lstverb|grep -P "(?<!.)root" /etc/passwd|
+	\item \lstverb|grep -P "root(?=:)" /etc/passwd|
+	\item \lstverb|grep -P "root(?!:)" /etc/passwd|
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Regular Expression: Examples}
+\footnotesize
+\begin{itemize}
+	\item[] \lstverb{/^[0-9]+$/}: \\matches any input line that consists of only digits.
+	\item[] \lstverb{/^[0-9][0-9][0-9]$/}\\{exact three digits}
+	\item[] \lstverb{/^(\+|-)?[0-9]+\.?[0-9]*$/}\\{a decimal number with an optional sign and optional fraction}
+	\item[] \lstverb{/^[+-]?[0-9]+[.]?[0-9]*$/}\\{also a decimal number with an optional sign and optional fraction}
+	\item[] \lstverb{/^[+-]?([0-9]+[.]?[0-9]*|[.][0-9]+)([eE])?$/}\\{a floating point number with optional sign and optional exponent}
+	\item[] \lstverb{/^[A-Za-z]|[A-Za-z0-9]*/}\\{a letter followed by any letters or digits}
+	\item[] \lstverb{/^[A-Za-z]$|^[A-Za-z0-9]*$/}\\{a single letter or any length of alphanumeric characters}
+	\item[] \lstverb{/^[A-Za-z][0-9]?$/}\\{a letter followed by 0-1 digit}
+\end{itemize}
+\end{frame}
+
+\section{Regular expression: Applications}
+
+\subsection{grep}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Using grep to find patterns in a text}
+\begin{block}{\centering\footnotesize Synopsis (用法)}
+\begin{itemize}
+	\item \lstinline|grep -oeEP 'PATTERN' FILENAME|
+	\item \lstinline{SOME_COMMAND | grep -oeEP 'PATTERN'}
+\end{itemize}
+\end{block}
+\begin{block}{\centering\footnotesize PATTERN (模式)}
+\begin{enumerate}
+\scriptsize
+	\item \textbf{PATTERN} can be any regular string
+	\item \textbf{PATTERN} can include escape character
+	\item \textbf{PATTERN} can include some metacharacters with 
+		special meanings.
+	\item \textbf{PATTERN} should be enclosed in single quotes. 
+\end{enumerate}
+\end{block}
+\begin{block}{\centering\footnotesize Options (常用选项)}
+\begin{itemize}
+\scriptsize
+	\item \textbf{-e}: use BRE
+	\item \textbf{-E}: use ERE
+	\item \textbf{-P}: use PCRE
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{grep}: A multiline matching example}
+\begin{block}{}
+\begin{lstlisting}[language=bash,basicstyle=\ttfamily\footnotesize]
+grep -Pzo '(?s)^(\s*)\N*main.*?\{.*?^\1\}' test.c
+\end{lstlisting}
+\end{block}
+\begin{table}[ht]
+\footnotesize
+\renewcommand\arraystretch{1.5}
+\begin{tabular}{ll}
+\hline
+\textbf{keywords} & \textbf{Description}\\
+\hline
+\texttt{-P} & activate \textcolor{blue}{PCRE} for \texttt{grep}.\\
+\texttt{-z} & activate \textcolor{blue}{multiline} mode.\\
+\texttt{-o} & print \textcolor{blue}{only matching}.\\
+\texttt{(?s)} & activate \textcolor{blue}{PCRE\_DOTALL}.\\
+\texttt{\textbackslash N} & match \textcolor{blue}{anything except newline}.\\
+\texttt{.*?} & \textcolor{blue}{suppress greedy matching} mode.\\
+\lstverb|^| & match \textcolor{blue}{start of line}.\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Greedy vs. Non-greedy Match (贪婪匹配 vs 非贪婪匹配)}
+\begin{block}{\centering\footnotesize Examples}
+\begin{itemize}
+	\item \lstinline{echo "page 2567" | grep -Po ".*(?!(\w+))"}
+	\item \lstinline{echo "page 2567" | grep -Po ".*?(?!(\w+))"}
+	\item \lstinline{echo "page 2567" | grep -Po ".*(?=(\d+))"}
+	\item \lstinline{echo "page 2567" | grep -Po ".*?(?=(\d+))"}
+\end{itemize}
+\end{block}
+\begin{itemize}
+\footnotesize
+	\item Non-greedy mode is only supported in PCRE.
+	\item Standard repetition quantifiers are greedy - expression tries 
+		to match the longest possible string.
+	\item Defers to achieving overall match.
+	\begin{itemize}
+		\item \lstverb|/.+\.jpg/| matches "filename.jpg"
+		\item The \lstverb|+| is greedy, but "gives back" the 
+			".jpg" to make the match.
+		\item Think of it as rewinding or backtracking.
+	\end{itemize} 
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{What would this match?}
+\begin{lstlisting}[language=bash]
+echo "Page 2687" | grep -P '.*?[0-9]*?'
+echo "Page 2687" | grep -P '.+?[0-9]*?'
+\end{lstlisting}
+\end{frame}
+
+\subsection{sed}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{sed}: Stream Editor}
+\begin{block}{\centering\footnotesize Synopsis}
+\lstinline{sed [-e script] [-f scriptfile] [-n] [files...]}
+\scriptsize
+\begin{tabular}{ll}
+\hline
+\textbf{-e} & Followed by inline scripts, default BRE\\
+\textbf{-n} & Suppress automatic printing of pattern space until the \textbf{p} action.\\
+\textbf{-f} & Read scripts from a sed file.\\
+\textbf{-i} & Edit files in place.\\
+\textbf{-r} & Using extended regular expression.\\
+\textbf{files} & The files for analyzing, `-' for \textbf{stdin}.\\
+\hline
+\end{tabular}
+\end{block}
+
+\begin{block}{invoking \texttt{sed}}
+\begin{lstlisting}
+sed -e '[address1[,address2]][action]' infiles
+sed -e 'command1;command2' infile # output results to screen
+sed -e 'command1;command2' infiles > outfile # save results
+command | sed -e 'command-sets' | command # piping
+sed -f sedfile infile > outfile # command saved in a file 
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Addresses}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{ll}
+\hline
+\textbf{Address type} & \textbf{Meaning}\\
+\hline
+\underline{number} & Match only the specified line \underline{number}.\\
+\$ & Match the last line.\\
+\underline{first}$\sim$\underline{step} & Match every \underline{step} lines starting from \underline{first}.\\
+/\underline{regexp}/ & Match lines matching the regular expression \underline{regexp}.\\
+$\backslash$c\underline{regexp}c & Match lines matching the regular expression \underline{regexp}.\\
+0,\underline{addr2} & read until the first match of \underline{addr2} (can be number or regexp).\\
+\underline{addr1},+\underline{N} & Match \underline{addr1} and the following \underline{N} lines.\\
+\underline{addr1},$\sim$\underline{N} & Match \underline{addr1} and continue until the line number is a multiple of \underline{N}.\\
+\hline
+\end{tabular}
+\end{table}
+\begin{block}{\centering\scriptsize Example}
+\begin{lstlisting}[language=bash]
+sed -n -e '1,~5p' /etc/passwd
+sed -n -e '1~5p' /etc/passwd
+sed -n -e '1,+5p' /etc/passwd
+sed -n -e '1,/root/p' /etc/passwd
+sed -n -e '0,/root/p' /etc/passwd
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[containsverbatim]
+\frametitle{Two Data Buffers (数据缓存空间)}
+\begin{itemize}
+\footnotesize
+	\item \textbf{Pattern Space (模式空间)}: By default the streaming data will be 
+		stored into the pattern space line by line. And the data will be output 
+		to screen. 
+	\item \textbf{Hold Space (保留空间)]}: The buffer for storing the temporary 
+		data. 
+\end{itemize}
+\begin{block}{\centering\footnotesize Workflow (\texttt{sed}的一般工作流程)}
+\begin{enumerate}[(1)]
+\footnotesize
+	\item Stores the current line in the pattern space; 
+	\item Deals with contents in the pattern space according 
+		to specified \textcolor{blue}{actions};
+	\item Print out the contents in pattern space;
+	\item Clear the contents in the pattern space;
+	\item Start next cycle.
+\end{enumerate}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{sed} actions}
+\begin{table}[ht]
+\tiny
+\renewcommand\arraystretch{1.2}
+\begin{tabular}{ll}
+\hline
+\textbf{Action} & \textbf{Description}\\
+\hline
+\textcolor{blue}{d} & Delete pattern space and start next cycle.\\
+\textcolor{blue}{h/H} & Copy/append pattern space to hold space.\\
+\textcolor{blue}{g/G} & Copy/append hold space to pattern space.\\
+\textcolor{blue}{x} & Exchange the contents of the hold and pattern spaces.\\
+\textcolor{blue}{p} & Print the contents in pattern space.\\
+\textcolor{blue}{P} & Print the contents in pattern space up to the first newline.\\
+\textcolor{blue}{q} & Quit the current cycle.\\ 
+\textcolor{blue}{s/RE/string/} & Replacement.\\
+\textcolor{blue}{y/chars/chars/} & Translate.\\
+\textcolor{blue}{c} & Change the pattern space with something.\\
+\textcolor{blue}{i} & Insert something before the pattern space.\\
+\textcolor{blue}{a} & Append something into the pattern space.\\ 
+\hline
+\end{tabular}
+\end{table}
+\begin{block}{\centering\footnotesize Examples}
+\begin{lstlisting}
+sed -n '1{h;n;x;H;x};p' filename # exchange line 1 and 2
+sed -n -e '1!G;h;$p' filename # ==tac
+sed -e '1!G;h;$!d' filename # ==tac
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Branch Commands}
+\begin{itemize}
+\footnotesize
+	\item \texttt{:\underline{label}}: \\Set \underline{label} for 
+		\texttt{b} and \texttt{t/T} commands.
+	\item \texttt{b \underline{label}}: \\Branch to \underline{label}; 
+		if \underline{label} is omitted, branch to end of script.
+	\item \texttt{t \underline{label}}: \\If a \lstverb|s///| has done 
+		a successful substitution since the last input line was read 
+		and since the last \texttt{t} or \texttt{T} command, then branch 
+		to \underline{label}; if \underline{label} is omitted, branch to 
+		end of script.
+	\item \texttt{T \underline{label}}: \\If no \lstverb|s///| has done 
+		a successful substitution since the last input line was read 
+		and since the last \texttt{t} or \texttt{T} command, then branch 
+		to \underline{label}; if \underline{label} is omitted, branch to 
+		end of script.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{sed}: Converting fastq to fasta}
+\begin{block}{\centering FASTQ file}
+\begin{lstlisting}
+@SRR018006.2016 GA2:6:1:20:650 length=36
+NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNGN
++SRR018006.2016 GA2:6:1:20:650 length=36
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!+!
+@SRR018006.19405469 GA2:6:100:1793:611 length=36
+ACCCGCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
++SRR018006.19405469 GA2:6:100:1793:611 length=36
+7);;).;);;/;*.2>/@@7;@77<..;)58)5/>/
+\end{lstlisting}
+\end{block}
+\begin{block}{solution}
+\begin{lstlisting}[language=bash]
+sed '/ˆ@/!d;s//>/;N' test.fastq > test.fasta
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{sed}: Another solutions}
+\begin{lstlisting}[language=bash]
+#!/bin/sed -r -f
+# Read a total of four lines into buffer
+$b error
+# if empty, jump to :error
+N;$b error
+# next line, if empty, jump to :error
+N;$b error
+# ...
+N
+# next line
+# Parse the lines
+/ˆ@(([ˆ ]*).*)(\n[ACGTN]*)\n\+\1\n.*$/{
+# Output id and sequence for FASTA format.
+s//>\2\3/
+b
+}
+:error
+i\
+Error parsing input:
+q
+\end{lstlisting}
+\end{frame}
+
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{sed}: Summary}
+\begin{figure}[ht]
+\includegraphics[width=0.80\textwidth]{images/sedpic.png}
+\end{figure}
+\end{frame}
+
+\subsection{awk}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{awk}: An interpreter language}
+\begin{itemize}
+\footnotesize
+	\item Named from three authors: Alfred \textcolor{blue}{A}ho, 
+		Peter \textcolor{blue}{W}einberger, and Brian \textcolor{blue}{K}ernighan.
+	\item Using C-style syntax
+	\item Support regular expression (正则表达式) and associative 
+		arrays (关联数组)
+	\item Good at editing field data
+\end{itemize}
+\begin{block}{\centering\footnotesize Example}
+\begin{lstlisting}
+ls -l | awk '{print $5,$8}'
+ls -l | awk '{print "File",$8,"size =",$5, "Bytes."}'
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{awk}: Built-in variables}
+\begin{table}[ht]
+\footnotesize
+\begin{tabular}{ll}
+\hline
+\textbf{built-in variable} & \textbf{Description}\\
+\hline
+\textbf{\$0} & The whole line.\\
+\textbf{\$1} & The first field of current line.\\
+\textbf{\$n} & The $n$-th field of current line.\\
+\textbf{ARGC} & Input arguments count.\\
+\textbf{ARGV} & Input argument vector.\\
+\textbf{FILENAME} & Name of current input file.\\
+\textbf{NR} & Records number up to now.\\
+\textbf{FNR} & Record number of current file.\\
+\textbf{NF} & Number of fields for current record.\\
+\textbf{FS/IFS} & Input field separator.\\
+\textbf{OFS} & Output field separator.\\
+\textbf{OFMT} & Output format for numbers, default \%.6g.\\
+\textbf{RS} & Input record separator, default newline.\\
+\textbf{ORS} & Output record separator, default newline.\\
+\textbf{RSTART} & Index of first character matched by match.\\
+\textbf{RLENGTH} & Match length of string match by match.\\
+\textbf{SUBSEP} & Subscript separator, default \lstverb|\034|.\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Three kinds of blocks: BEGIN\{\},\{\},END\{\}}
+\begin{lstlisting}[language=awk,format=awk]
+BEGIN{
+	actions
+}
+[PATTERN]{
+	actions
+}
+END{
+	actions
+}
+\end{lstlisting}
+\begin{itemize}
+\footnotesize
+	\item \textbf{BEGIN} will be executed prior to the 
+		manipulation of the target file.
+	\item \textbf{MAIN} block will be executed on the 
+		file line by line.
+	\item \textbf{END} will be executed after the file 
+		reach the end.  
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Example: Setting FS}
+\begin{lstlisting}[language=awk,format=awk]
+#!/usr/bin/awk -f
+# file: test.awk
+BEGIN {
+	FS="[:-]"
+}
+{
+	for (i=1; i<=NF; i++) print $i;
+}
+END {
+	print "The", FILENAME, "has", NR, "rows."
+}
+\end{lstlisting}
+\begin{block}{\centering\footnotesize Run the script file}
+\begin{lstlisting}[language=bash]
+echo -e "ab-cd:ef\ngh:ij-kl" | awk -f test.awk
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Another \texttt{awk} Example}
+\begin{lstlisting}[language=awk,format=awk]
+#!/bin/awk -f
+# test2.awk
+BEGIN {
+	FS=":"
+}
+{
+	if ($2 == "") {
+		print $1 ": no password";
+		total++;
+	}
+}
+END {
+	print "Total no-password account = ", total
+}
+\end{lstlisting}
+\begin{block}{\centering\footnotesize Run}
+\begin{lstlisting}[language=bash]
+chmod u+x test2.awk
+./test2.awk /etc/shadow
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{awk} patterns: relational operators}
+\begin{table}[ht]
+\scriptsize
+\begin{tabular}{ll}
+\hline
+\textbf{Regexs} & Meaning\\
+\hline
+\lstverb|$1~/regex/{actions}| & if the field 1 matches regex,\\
+\lstverb|$1!~/regex/{actions}| & if the field 1 does not match,\\
+\lstverb|/regex/{actions}| & if the whole line matches\\
+\lstverb|!/regex/{actions}| & unless the whole line matches\\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[ht]
+\scriptsize
+\begin{tabular}{ll}
+\hline
+\textbf{Operators} & Meaning\\
+\hline
+\lstverb|$1==5{actions}| & Equal\\
+\lstverb|$1!=5{actions}| & Not equal\\
+\lstverb|$1>5{actions}| & Greater than\\
+\lstverb|$1>=5{actions}| & Greater than or equal to\\
+\lstverb|$1<5{actions}| & Less than\\
+\lstverb|$1<=5{actions}| & Less than or equal to\\
+\lstverb|$1<5 && $2>6{actions}| & Conditional AND\\
+\lstverb!$1<5 || $2>6{actions}! & Conditional OR\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Control Flow Statements}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{l}
+\hline
+\textbf{command and short description}\\
+\hline
+\lstinline|{statements}|: Execute all the statements in the brackets.\\
+\lstinline|if(expression)statement|: If expression is true, execute.\\
+\lstinline|if(expression) statement1 else statement2|: if-condition.\\
+\lstinline|for(expression1;expression2;expression3)statement|: C-style for.\\
+\lstinline|for(variable in array)statement|: in-style for.\\
+\lstinline|while(expression)statement|: while-loop.\\
+\lstinline|do statement while(expression)| do-while-loop.\\
+\lstinline|break|: immediately leave innermost.\\
+\lstinline|continue|: start next iteration of innermost.\\
+\lstinline|next|: start next iteration of main input loop.\\
+\lstinline|exit|: exit\\
+\lstinline|exit expression|: go immediately to END.\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Associative arrays (关联数组)}
+\begin{itemize}
+\scriptsize
+	\item All \texttt{awk} arrays are in fact associative arrays (关联数组).
+	\item The subscript (or the index) can be either numeric or string, but 
+		they are actually strings.
+	\item 
+\end{itemize}
+\begin{lstlisting}[language=awk,format=awk]
+#!/bin/awk -f
+BEGIN {
+    for (i=0; i<10; i++) {
+        for (j=0; j<10; j++) {
+                prod[i][j] = i * j;
+        }
+    }
+    for (i=0; i<10; i++) {
+        for (j=0; j<=i; j++) {
+            printf("%dx%d=%2d ", i, j, prod[i][j]);
+        }
+        print;
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Builtin Arithmetic Functions}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{ll}
+\hline
+\textbf{Functions} & \textbf{Description}\\
+\hline
+\texttt{atan2(y,x)} & arctangent of $y/x$ in the range $-\pi$ to $\pi$\\
+\texttt{cos(x)} & cosine of $x$, with $x$ in radians.\\
+\texttt{exp(x)} & exponential function of $x$, $e^x$\\
+\texttt{int(x)} & integer part of $x$; truncated towards 0\\
+\texttt{log(x)} & natural logarithm of $x$\\
+\texttt{rand()} & random number $0 \le r \le 1$\\
+\texttt{sin(x)} & sine of $x$, with $x$ in radians\\
+\texttt{sqrt(x)} & square root of $x$\\
+\texttt{srand(x)} & $x$ is new seed for \texttt{rand()}\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Built-in string functions}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{ll}
+\hline
+\textbf{Functions} & \textbf{Description}\\
+\hline
+\lstverb|gsub(r,s)| & Substitute \texttt{s} for \texttt{r} globally in \texttt{\$0}.\\
+\lstverb|gsub(r,s,t)| & Substitute \texttt{s} for \texttt{r} globally in string \texttt{t}.\\
+\lstverb|index(s,t)| & First position of string \texttt{t} in \texttt{s}, 0 otherwise.\\
+\lstverb|length(s)| & Length of string \texttt{s}.\\
+\lstverb|match(s,r)| & Substring match. sets RSTART and RLENGTH.\\
+\lstverb|split(s,a)| & split \texttt{s} into array \texttt{a} using FS; return length(a).\\
+\lstverb|split(s,a,fs)| & split \texttt{s} into array \texttt{a} using \texttt{fs}.\\
+\lstverb|sprintf(fmt,exprs)| & return string according to format \texttt{fmt}.\\
+\lstverb|sub(r, s)| & substitute \texttt{s} by \texttt{r}.\\
+\lstverb|sub(r,s,t)| & substitute \texttt{s} by \texttt{r} in \texttt{t}.\\
+\lstverb|substr(s,p)| & return suffix of \texttt{s} starting at \texttt{p}.\\
+\lstverb|substr(s,p,n)| & return substring of \texttt{s} starting from \texttt{p} with length \texttt{n}.\\  
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{A short \texttt{awk} script without input files}
+\begin{lstlisting}[language=awk, format=awk]
+#!/bin/awk -f
+# seq.awk - print sequences of integers
+# input: arguments q, p q, or p q r; q >= p & r > 0
+# output: integer 1 to q, in step of r
+BEGIN {
+	if (ARGC == 2)
+		for (i = 1; i <= ARGV[1]; i++) print i
+	else if (ARGC == 3)
+		for (i=ARGV[1]; i <= ARGV[2]; i++) print i
+	else if (ARGC == 4)
+		for (i=ARGV[1]; i <= ARGV[2]; i += ARGV[3]) print i
+}
+\end{lstlisting}
+\begin{block}{\centering\footnotesize Run}
+\begin{lstlisting}
+awk -f seq.awk 10
+awk -f seq.awk 1 10
+awk -f seq.awk 1 10 1
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Compute column sums}
+\begin{lstlisting}[language=awk,format=awk]
+# sum1.awk - print column sums
+# input: rows of numbers
+# output: sum of each column
+#
+{
+	for ( i = 1; i <= NF; i++) sum[i] += $i
+	if (NF > maxfld) maxfld = NF
+}
+END {
+	for (i=1; i <= maxfld; i++) {
+		printf("%g", sum[i])
+		if (i < maxfld) printf("\t")
+		else 	printf("\n")
+	}
+}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Draw a histogram}
+\begin{lstlisting}[language=awk,format=awk]
+#!/bin/awk -f
+# histogram.awk
+# input: numbers between 0 and 100
+# output: histogram of deciles
+{ x[int($1/10)]++ }
+END {
+	for (i=0; i < 10; i++)
+		printf(" %2d - %2d: %3d %s\n", 10*i, 10*i+9, x[i], rep(x[i], "*"))
+}
+function rep(n, s, t) {
+	while (n-- > 0) t = t s
+	return t
+}
+\end{lstlisting}
+\begin{block}{Run scripts}
+\begin{lstlisting}
+chmod u+x histogram.awk
+awk '
+# generate random integers
+BEGIN {
+	for (i=1; i<=200; i++) print int(100*rand())
+}'  | ./histogram.awk
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+
+\end{CJK*}
+\end{document}

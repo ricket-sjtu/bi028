@@ -1,7 +1,7 @@
 \documentclass[red]{beamer}
 
 \mode<presentation>{
-\usetheme{Boadilla}
+\usetheme{Goettingen}
 \usecolortheme{default}
 }
 \usepackage{CJK}
@@ -25,8 +25,8 @@ showtabs=false,
 frame=shadowbox,
 rulesepcolor=\color{red!20!green!20!blue!20},
 breaklines=true}
-\title[BI028]{BI028: Linux and Shell Programming}
-\author[Maoying]{Maoying,Wu\\
+\title[BI296]{BI296: Linux and Shell Programming}
+\author[Maoying Wu]{Maoying,Wu\\
 {\scriptsize ricket.woo@gmail.com}}
 \institute[CBB] % (optional, but mostly needed)
 {
@@ -34,7 +34,7 @@ breaklines=true}
   Dept. of Bioinformatics \& Biostatistics\\
   Shanghai Jiao Tong University
 }
-\date{Spring, 2016}
+\date{Spring, 2017}
 
 \AtBeginSubsection[]
 {
@@ -44,7 +44,7 @@ breaklines=true}
 }
 
 \begin{document}
-\begin{CJK*}{GBK}{kai}
+\begin{CJK*}{UTF8}{gbsn}
 \frame{\titlepage}
 
 \section[Outline]{Course Outline}
@@ -57,36 +57,34 @@ breaklines=true}
     \item \textbf{Textbook}: None
     \item \textbf{Grading}: Grades will be determined roughly by
     \begin{itemize}
-        \item 5 Quizzes: 20\% total
+			\item Assignments: 20\%
+        \item 5 Quizzes: 25\% total
         \item Take-home Practical Final: 30\%
-        \item Assignments: 20\%
         \item Projects: 25\%
     \end{itemize}
     \item \textbf{Exams}: There will be 5 quizzes, 1 bring-home practical final.
-        All exams will be open-book, and cover materials from lectures, discussions, 
-		labs and extracurricular readings.
+        All exams will be open-book, and will cover materials from lectures, 
+			discussions, labs and extracurricular readings.
 
-    \item \textbf{Webpage}: \url{http://cbb.sjtu.edu.cn/course/bi028}
+    \item \textbf{Webpage}: \url{http://cbb.sjtu.edu.cn/course/bi296}
+	 \item \textbf{Github}: \url{https://github.com/ricket-sjtu/bi028}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
-\frametitle{Course Plan}
+\frametitle{Course Schedule}
 Schedule is to be changed according to the practical reasons.
 \begin{itemize}
-	\item Lecture 00: Fundamental Knowledge about Linux
-	\item Lecture 01: Dummy Linux \textcolor{red}{Commands}
-    \item Lecture 02: Linux File System and System Management
-    \item Lecture 03: Regular Expression - \textcolor{red}{SED and AWK}
-    \item Lecture 04: \textcolor{red}{Shell Programming} (BASH)
-    \item Lecture 05: Fundamental Python Programming
-    \item Lecture 06: Data Structures and Algorithms in Python
-	\item Lecture 07: Scientific computing with Python
-	\item Lecture 08: Data visualization with Python
-	\item Lecture 09: Statistical Analysis with Python
-	\item Lecture 10: Machine learning using Python
-    \item Lecture 11: \textcolor{red}{Process Management and Scheduling}
-    \item Lecture 12: \textcolor{red}{System Administration}
+	\item Lecture 01: Fundamental Knowledge about Linux
+	\item Lecture 02: Dummy \textcolor{red}{Linux Commands}
+	\item Lecture 03: Linux File System，Process Management and System Administration
+	\item Lecture 04: Regular Expression - \textcolor{red}{SED and AWK}
+	\item Lecture 05: \textcolor{red}{Shell Programming} (BASH)
+	\item Lecture 06: \textcolor{red}{System Security}
+	\item Lecture 07: Fundamental \textcolor{red}{Python Programming}
+	\item Lecture 08: Data Structures and Algorithms in Python
+	\item Lecture 09: Scientific computing with Python
+	\item Lecture 10: Python \textcolor{red}{Data Science}
 \end{itemize}
 \end{frame}
 
@@ -95,8 +93,8 @@ Schedule is to be changed according to the practical reasons.
 \frametitle{Assignment Policy}
 \begin{itemize}
     \item To: \url{ricket.woo@gmail.com}
-    \item Title: lab1\_5140809010
-    \item Attachment: lab1\_5140809010.tar.gz
+    \item Title: lab1\_5150809010
+    \item Attachment: lab1\_5150809010.tar.gz
     \item \textbf{Late Policy}
     \begin{itemize}
         \item Solutions to assignments should be submitted before the due.
@@ -107,13 +105,105 @@ Schedule is to be changed according to the practical reasons.
 \end{frame}
 
 \begin{frame}
+\begin{figure}[h]
+\includegraphics[width=3in]{images/fix_computers.png}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
 \frametitle{Stop here and Ask}
 \begin{center}
 \Huge Any Questions?
 \end{center}
 \end{frame}
 
-\section[Hardware]{Computer hardware}
+\section[CS-Fundamentals]{Fundamental Computer Science}
+
+\begin{frame}
+\frametitle{fundamental concepts}
+\begin{itemize}
+	\item Central Processing Unit（CPU，中央处理器）
+	\item Cache（高速缓存）
+	\item Storage（存储）：bit, Byte, KB, MB, GB, TB, PB, EB, ZB
+	\item Input/Output（输入输出）
+	\item Controller（控制器）
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Number system}
+\begin{itemize}
+	\item Decimal（十进制）
+	\item Binary（二进制）
+	\item Octal（八进制）
+	\item Hexadecimal（十六进制）
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercise}
+\begin{table}[ht]
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{decimal} & \textbf{binary} & \textbf{octal} & \textbf{hexadecimal}\\
+\hline
+12.68 & & & \\
+\hline
+& 1001110 & &\\
+\hline
+& & 7553 & \\
+\hline
+& & & 9FA5\\
+\hline 
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Machine digit（机器数的二进制表示）}
+\begin{itemize}
+	\item Original（原码）
+	\item One's complement（反码）
+	\item Two's complement（补码）
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Exercise}
+\begin{enumerate}
+	\item Convert these positive decimal to binary:
+	\begin{itemize}
+		\item 133d
+		\item 25d
+		\item 73d
+	\end{itemize}
+	\item Convert these negative decimal values to negative 
+		binary using one's complement and two's complement(补码，
+		假设计算机字长为8bit):
+	\begin{itemize}
+		\item -192d
+		\item -16d
+		\item -1d
+		\item -0d
+	\end{itemize}
+\end{enumerate}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Network}
+\begin{itemize}
+	\item Host（主机）, Domain（域）
+	\item IP Adress, IPv4, IPv6
+	\item Physical Address (MAC Address)
+	\item Gateway(网关), netmask（子网掩码）
+	\item Domain Name Server（DNS，域名服务器）
+	\item Network Communication Protocol (网络通信协议)
+\end{itemize}
+\end{frame}
 
 
 
@@ -137,26 +227,32 @@ computer programs.
 \end{frame}
 
 \begin{frame}
-\frametitle{The principal tasks for an OS}
+\frametitle{The principal tasks of OS}
 \begin{itemize}
-    \item Processor (CPU) Management
-    \item Memory (Storage) Management
-    \item Devices Management
-    \item Application Management
-    \item User Interface (UI)
+    \item Processor (CPU) Management（处理器管理）
+    \item Memory (Storage) Management（内存/存储管理）
+    \item Devices Management（设备管理）
+    \item Application Management（应用程序管理）
+    \item User Interface (UI)（提供用户接口）
 \end{itemize}
 \end{frame}
 
 \subsection{Why Linux?}
 
 \begin{frame}
+\begin{figure}[h]
+\includegraphics[width=3in]{images/gates.png}
+\end{figure}
+\end{frame}
+
+\begin{frame}
 \frametitle{What is Linux?}
 A free and open-source UNIX-like operating system developed under 
 the GNU General Public License (GPL).
 \begin{itemize}
-    \item Free and open source.
-    \item More and more popular
-    \item Portable: Supports most of the available computers
+    \item Free and open source（自由、开源）.
+    \item More and more popular（时髦）
+    \item Portable（可移植）: Supports most of the available computers
 \end{itemize}
 \end{frame}
 
@@ -165,7 +261,7 @@ the GNU General Public License (GPL).
 \begin{itemize}
     \item Prototype: \emph{Multics} by AT\&T Bell Lab, GE and MIT
     \item 1969, UNIX by Ken Thompson and Dennis Ritchie
-    \item 1973 UNIX rewritten with C (unprecedented, providing portability)
+    \item 1973 UNIX rewritten with C (providing portability)
     \item Berkeley UNIX (BSD UNIX)
     \item 1983, System V
     \item Commercial Products: SunOS, Solaris, HP-UX, AIX, SCO-UNIX
@@ -177,14 +273,14 @@ the GNU General Public License (GPL).
 \begin{itemize}
     \item Unix is very simple
     \begin{itemize}
-        \item UNIX systems implement only hundreds of system calls and
+        \item Implements only hundreds of system calls（系统调用） and
         \item have a straightforward, even basic design.
     \end{itemize}
     \item In UNIX, everything is a file, which unifies the manipulation
         of data and devices into a set of core system calls.
-    \item Kernels and all related system utilities are written in C
+    \item Kernels（内核）and all related system utilities are written in C and ASM
     \item Fast process creation and unique \emph{fork()} system call.
-    \item Providing simple yet robust IPC  primitives.
+    \item Providing simple yet robust IPC（进程通信） primitives.
     \item Exhibiting clean layering, with a strong separation between policy (what to do) 
 		and mechanism (how to do).
 \end{itemize}
@@ -193,8 +289,7 @@ the GNU General Public License (GPL).
 \begin{frame}
 \frametitle{A Short History of Linux (1)}
 \begin{figure}
-  \includegraphics[width=1.5in]{images/stallman.jpg}
- \includegraphics[width=1in]{images/gnu.png}\\
+  \includegraphics[width=1in]{images/stallman.jpg}
 \end{figure}
 
 \begin{itemize}
@@ -212,7 +307,7 @@ the GNU General Public License (GPL).
         \item C Compiler, C library
         \item emacs/bash
     \end{itemize}
-    \item To fund the GNU project - Free Software Foundation (FSF)
+    \item Free Software Foundation (FSF)
     \begin{itemize}
         \item \url{http://www.fsf.org}
     \end{itemize}
@@ -222,15 +317,15 @@ the GNU General Public License (GPL).
 \begin{frame}
 \frametitle{A Short History of Linux (2)}
 \begin{figure}
-  \includegraphics[width=.80in]{images/linus.jpg}
-  \includegraphics[width=1in]{images/redhat.jpg}
+  \includegraphics[width=.80in]{images/torvalds.jpg}
+  \includegraphics[width=1in]{images/redhat.png}
 \end{figure}
 
 \begin{itemize}
     \item 1991, \emph{Linus Torvalds}, 1st version of \emph{Linux Kernel}
     \begin{itemize}
         \item Initially on the 386 protected mode
-        \item Linus's UNIX = Linux
+        \item Linus's UNIX-Like OS = Linux
     \end{itemize}
     \item 1992: 1st distributions emerged
     \begin{itemize}
@@ -238,7 +333,7 @@ the GNU General Public License (GPL).
         \item GNU and other tools
         \item Installation procedure
     \end{itemize}
-    \item The rest is well-known history ...
+    \item The rest is well-known story ...
     \begin{itemize}
         \item RedHat, Ubuntu, Debian, OpenSuSe, etc.
     \end{itemize}
@@ -248,29 +343,29 @@ the GNU General Public License (GPL).
 \begin{frame}
 \frametitle{A Typical Computer System Architecture}
 \begin{figure}
-  \includegraphics[width=3in]{images/system.png}
+  \includegraphics[width=3in]{images/system.jpg}
 \end{figure}
 \end{frame}
 
 \begin{frame}
 \frametitle{Programmer's Viewpoint}
 \begin{figure}
-  \includegraphics[width=3in]{images/programmer.png}
+  \includegraphics[width=3in]{images/os_structure.png}
 \end{figure}
 \end{frame}
 
-\subsection{Future Perspectives}
+\subsection{Linux vs. Windows vs. MacOS}
 \begin{frame}
-\frametitle{Future Perspectives}
+\frametitle{Linux, Windows, MacOS}
 \begin{figure}
-  \includegraphics[width=3in]{images/bulls.png}
+  \includegraphics[width=3in]{images/comparison2.jpg}
 \end{figure}
 \end{frame}
 
 \subsection{Basic Knowledge}
 
 \begin{frame}
-\frametitle{2-M: Multi-User and Multi-tasking}
+\frametitle{M2: Multi-User and Multi-tasking}
 \begin{itemize}
     \item Linux is a multi-user, multi-tasking OS
     \begin{itemize}
@@ -315,9 +410,7 @@ the GNU General Public License (GPL).
 \begin{frame}[t,fragile]
 \frametitle{Command Syntax}
 \begin{block}{Syntax format}
-\begin{quote}
-<command> [option(s)] [argument(s)]
-\end{quote}
+\lstinline{<command> [option(s)] [argument(s)]}
 \end{block}
 
 \begin{block}{Examples}
@@ -336,13 +429,13 @@ ls -al /dev
 \begin{frame}
 \frametitle{Some Useful Commands}
 \begin{itemize}
-    \item \textbf{passwd}: Change your password
-    \item \textbf{mkpasswd}: Generate a random password
-    \item \textbf{date, cal}: Find out today's date and display a calendar
-    \item \textbf{who, finger}: Find out who else is active on the system
-    \item \textbf{clear}: Clear the screen
-    \item \textbf{echo}: Write a message to your screen
-    \item \textbf{write, wall, talk, mesg}: Inter-user communication
+    \item \lstinline{passwd}: Change your password
+    \item \lstinline{mkpasswd}: Generate a random password
+    \item \lstinline{date, cal}: Find out today's date and display a calendar
+    \item \lstinline{who, finger}: Find out who else is active on the system
+    \item \lstinline{clear}: Clear the screen
+    \item \lstinline{echo}: Write a message to your screen
+    \item \lstinline{write, wall, talk, mesg}: Inter-user communication
     \item ...
 \end{itemize}
 \end{frame}
@@ -350,17 +443,17 @@ ls -al /dev
 \begin{frame}
 \frametitle{who, what, where, where to go}
 \begin{itemize}
-    \item \textbf{pwd}: Print Working Directory
-    \item \textbf{uname}: Print the system information
-    \item \textbf{whoami}: Who am I
-    \item \textbf{cd}: Change Directory
+    \item \lstinline{pwd}: Print Working Directory
+    \item \lstinline{uname}: Print the system information
+    \item \lstinline{whoami}: Who am I
+    \item \lstinline{cd}: Change working Directory
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{pwd: knowing where you are now}
 \begin{itemize}
-    \item \textbf{Synopsis}: \texttt{pwd}
+    \item \textbf{Synopsis}: \lstinline{pwd}
     \item All the path names are started with a slash (``/''), for example
     \item ``/root'' is the home directory for root
     \item ``/home/xxx'' is the home directory for user ``xxx''
@@ -373,26 +466,25 @@ ls -al /dev
 \begin{frame}
 \frametitle{uname: knowing what my system is}
 \begin{itemize}
-    \item \textbf{Synopsis}: \texttt{uname option(s)}
-    \item \texttt{uname -a: --all}
-    \item \texttt{uname -i: --hardware-platform}
-    \item \texttt{uname -m: --machine}
-    \item \texttt{uname -n: --node-name}
-    \item \texttt{uname -o: --operation-system}
-    \item \texttt{uname -r: --kernel-release}
-    \item \texttt{uname -s: --kernel-name}
-    \item \texttt{uname -v: --kernel-version}
-    \item \texttt{uname -p: --processor}
-    \item You can use \texttt{uname --help} to obtain more information for this command.
-    \item \color{blue!80}{This command is very useful in
-compiling the system-dependent code.}
+    \item \textbf{Synopsis}: \lstinline{uname option(s)}
+    \item \lstinline{uname -a: --all}
+    \item \lstinline{uname -i: --hardware-platform}
+    \item \lstinline{uname -m: --machine}
+    \item \lstinline{uname -n: --node-name}
+    \item \lstinline{uname -o: --operation-system}
+    \item \lstinline{uname -r: --kernel-release}
+    \item \lstinline{uname -s: --kernel-name}
+    \item \lstinline{uname -v: --kernel-version}
+    \item \lstinline{uname -p: --processor}
+    \item You can use \lstinline{uname --help} to obtain more information for this command.
+    \item \color{blue!80}{This command is very useful in compiling the system-dependent code.}
 \end{itemize}
 \end{frame}
 
 \begin{frame}
 \frametitle{whoami: knowing who you are}
 \begin{itemize}
-    \item \textbf{Synopsis}: \texttt{whoami}
+    \item \textbf{Synopsis}: \lstinline{whoami}
     \item The command is different from ``who am i''
     \item and also ``who''
     \item Now guess what the command ``who'' can do for you?
@@ -439,7 +531,7 @@ compiling the system-dependent code.}
         \item \textbf{DESCRIPTION}: Explanation of how the command works and what it does
         \item \textbf{Files}: The files used by the command
         \item \textbf{Bugs}: Known bugs and errors
-        \item \textbf{See also}: Other relevant commands
+        \item \textbf{See Also}: Other relevant commands
     \end{itemize}
 \end{itemize}
 \end{frame}
@@ -449,7 +541,7 @@ compiling the system-dependent code.}
 \begin{itemize}
     \item The ``-k'' option
     \begin{itemize}
-        \item man -k print
+        \item \lstinline{man -k print}
     \end{itemize}
     \item Manual pages are divided into 8 sections:
     \begin{enumerate}
@@ -464,26 +556,8 @@ compiling the system-dependent code.}
     \end{enumerate}
     \item To select the correct section, add section number:
     \begin{itemize}
-        \item man 1 passwd
-        \item man 5 passwd
-    \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{The info command}
-\begin{itemize}
-    \item \textbf{FUNCTION}: Read documentation, sometimes an alternative for manual pages
-    \item Information for info is stored in /usr/info or /usr/share/info
-    \item Some info commands:
-    \begin{itemize}
-        \item SPACE: next screen of text
-        \item DELETE: previous screen of text
-        \item n: next node
-        \item p: previous node
-        \item u: up node
-        \item q: quit info
-        \item TAB: skip to next menu item
+        \item \lstinline{man 1 passwd}
+        \item \lstinline{man 5 passwd}
     \end{itemize}
 \end{itemize}
 \end{frame}

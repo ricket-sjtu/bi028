@@ -1,0 +1,274 @@
+\documentclass[addpoints,12pt,answers]{exam}
+
+\usepackage{color}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{CJK}
+
+\newcommand{\tf}[1][{}]{%
+	\fillin[#1][0.25in]%
+}
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+\checkboxchar{$\Box$}
+\checkedchar{$\blacksquare$}
+\CorrectChoiceEmphasis{\color{red}}
+
+\pagestyle{headandfoot}
+\runningheadrule
+\firstpageheader{BI296}{Quiz 2}{March 31, 2017}
+\runningheader{BI296}
+			{Quiz 2, Page \thepage\ of \numpages}
+			{March 31, 2017}
+\firstpagefooter{}{}{}
+\runningfooter{}{}{}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+\vspace{0.1in}
+
+\makebox[\textwidth]{学号、姓名: \enspace\hrulefill}
+
+\vspace{0.1in}
+
+\makebox[\textwidth]{教师: \hrulefill}
+
+\section*{一、选择题}
+
+\begin{questions}
+
+\question[1]
+对一个已经存在的文件执行\texttt{touch}命令后，修改的时间戳是
+\begin{choices}
+	\choice atime
+	\choice ctime
+	\choice mtime
+	\choice 以上皆是
+\end{choices}
+\answerline
+
+
+\question[1]
+下列命令中，能同时查看两个以上文件内容的是
+\begin{choices}
+	\choice cat, tac
+	\choice less, more
+	\choice head, tail
+	\choice 以上皆是
+\end{choices}
+\answerline
+
+\question[1]
+用cp和ln都可以“复制”文件，两者的差别是什么？
+\begin{choices}
+	\choice 前者创建一个独立的文件；后者创建的文件与前者不独立
+	\choice 前者不改变源文件的所有属性
+	\choice cp产生的文件具有不同的inode；而ln产生的硬连接文件与源文件具有相同的inode 
+	\choice ln产生的符号连接文件与其他文件类型完全不同
+\end{choices}
+\answerline
+
+\question[1]
+下面关于正则表达式BRE，ERE和PCRE的论断，正确的是？
+\begin{choices}
+	\choice BRE与ERE/PCRE的主要区别是其是否支持部分元字符的特殊意义
+	\choice 在类UNIX操作系统中，默认使用的是BRE
+	\choice sed和awk只能支持BRE，而grep可支持三种正则表达式
+	\choice ERE可支持非贪婪匹配、命名捕获组和零宽断言
+\end{choices}
+\answerline
+
+\question[1]
+下面的正则表达式中，正确的是？
+\begin{choices}
+	\choice \lstinline|(?<=[stm]*)asd|是一种look-behind
+	\choice \lstinline|asd(?=[stm]*)|是一种look-ahead
+	\choice	\lstinline|\d+(\.\d{,5})?|表示至多5个小数位的正实数
+	\choice \lstinline|[.]*|可以表示任意长度的任意字符
+\end{choices}
+\answerline
+
+\end{questions}
+
+\section*{二、填空题}
+
+\begin{questions}
+	\question[5] 在Linux系统中，有多种特殊文件类型，分别是\fillin[], \fillin[], \fillin[], \fillin[], \fillin[]。
+	\question[1] Linux文件系统中每个文件用 \fillin[]来标识。
+	\question[2] 链接文件一般分为\fillin[] 和 \fillin[]。
+	\question[2] 某文件的权限为：\lstinline{drw-r--r--}，用数值形式表示该权限，则该八进制数为： \fillin[]，该文件属性是 \fillin[]。
+	\question[2] 前台起动的进程使用 \fillin[]终止，使用\fillin[]挂起。
+	\question[2] 安装Linux系统对硬盘分区时，必须有两种分区类型： \fillin[] 和\fillin[] 。
+	\question[2] 编写的Shell程序运行前必须赋予该脚本文件 \fillin[]和\fillin[]权限。
+	\question[4] 系统管理的任务之一是能够实现对程序和数据的\fillin[]、\fillin[]、\fillin[]和\fillin[]。
+	\question[2] 系统交换分区（swap）是作为\fillin[]的一块区域。
+	\question[4] 内核分为 \fillin[][2in]、 \fillin[][2in]、\fillin[][2in] 和\fillin[][2in] 等四个子系统。
+	\question[6] 在安装Linux系统中，需要对网络进行配置，该安装程序会提示用户输入\fillin[]、\fillin[]、\fillin[]、
+		\fillin[]、 \fillin[] 和 \fillin[] 等必要信息。
+	\question[2] 唯一标识每一个用户的是\fillin[]和\fillin[]。
+ 	\question[1] \fillin[][2in]可以实现动态 IP地址分配。
+	\question[4] 系统网络管理员的管理对象是\fillin[]、 \fillin[] 和\fillin[]以及\fillin[]。
+	\question[1] \fillin[]命令可以测试网络中本机系统是否能到达 一台远程主机 ，所以常常用于测试网络的 连通性 。
+	\question[2] vim 编辑器具有两种工作模式：\fillin[] 和 \fillin[]。
+	\question[1] DNS实际上是分布在internet上的主机信息的数据库，其作用是实现 \fillin[][2in]之间的转换。
+	\question[1] 在超级用户下显示Linux系统中正在运行的全部进程，应使用的命令及参数是 \fillin[]。
+	\question[1] 在 Linux系统中，压缩文件后生成后缀为.tgz文件的命令是\fillin[]。
+	\question[1] 在用vim编辑文件时，将文件内容存入test.txt文件中，应在命令模式下键入 \fillin[]。
+\end{questions}
+
+\section*{三、简答题}
+
+\begin{questions}
+
+\question[5]
+一般说来，在安装Linux操作系统时，需要对磁盘进行分区，一般的系统分区标准是什么？（假设硬盘为300G，内存16G）
+\begin{solution}
+\vspace{2in}
+\end{solution}
+\vspace{2in}
+
+\question[5]
+Linux网卡配置文件路径是什么？要使服务器上外网，必须满足的条件有哪些？需要配置什么？
+\begin{solution}
+\vspace{2in}
+\end{solution}
+\vspace{2in}
+
+\question[5]
+/mnt目录主要用于什么？/root目录跟root用户有什么关系？/根目录与/boot目录有什么联系？
+\begin{solution}
+\vspace{2in}
+\end{solution}
+\vspace{2in}
+
+\question[5]
+某一天误操作，执行了rm  -rf  * ，会有哪些情况发生？请举例。
+\begin{solution}
+\vspace{2in}
+\end{solution}
+\vspace{2in}
+
+\question[5]
+在生物序列分析中，可以用正则表达式表示一组序列motif，例如
+\begin{lstlisting}
+[AC]-x-V-x(4)-{ED}
+\end{lstlisting}
+这里使用了不同的规则：
+\begin{table}[ht]
+\begin{tabular}{lll}
+\hline
+\textbf{Expression} & \textbf{Description} & \textbf{Example}\\ 
+\hline
+\texttt{x} & ANY single amino acid. & \\
+\texttt{[]} & OR & \texttt{[ILV]}: I or L or V\\
+\texttt{\{\}} & NOT & \texttt{\{DE\}}: not D or E\\
+\texttt{()} & Repetitions & \texttt{x(2,3)}: x-x or x-x-x\\
+\texttt{-}	& Separator & \\
+\texttt{<} & N-terminal & \\
+\texttt{>} & C-terminal & \\
+\texttt{.} & END & \\
+\hline
+\end{tabular}
+\end{table}
+请写出至少5种可能的多肽序列。
+
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+
+
+\question[5]
+说说基本正则表达式BRE、扩展正则表达式ERE、PCRE各自有什么特性和区别。
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+\question[5]
+下面是常用的国内固定电话号码的表示方式，使用正则表达式捕获下列电话号码中多区号信息：
+\begin{lstlisting}
+021-3420-4348
+(021)3420-4348
+02134204348
+021 3420 4348
+86-21-3420-4348
+\end{lstlisting}
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+\question[5]
+写一个正则表达式，匹配下面所有的email，同时用一个组捕获用户名。
+\begin{lstlisting}
+tom@sina.com
+tom.riddle@sina.com
+tom.riddle+regexone@sina.com
+tom@sina.com.hk
+potter@sina.com
+harry@sina.com.cn
+herminorie+regexone@sina.com
+\end{lstlisting}
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+\question[5]
+写出一个正则表达式，匹配下面所有的HTML表达式，同时捕获其中的HTML标签：
+\begin{lstlisting}
+<a>This is a link</a>
+<a href='https://gmail.com'>Gmail</a>
+<div class="test_style">Test</div>
+<div id="hello">Hello <span>world</span></div>
+\end{lstlisting}
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+\question[5]
+写一个正则表达式，匹配下面所有图文件的同时，捕获这些文件的文件名（不包括扩展名）。
+\begin{lstlisting}
+.bash_profile
+cheatsheet.doc
+img0330.jpg
+updated_img0330.png
+documentation.htm
+favicon.gif
+img0330.jpg.tmp
+access.deny
+\end{lstlisting}
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+
+\question[5]
+下面是一些java运行报错的日志信息，请写出一个正则表达式匹配，同时捕获出错的类名以及对应的java文件和行。
+\begin{lstlisting}
+E/( 1553):   at widget.List.makeView(ListView.java:1727)
+E/( 1553):   at widget.List.fillDown(ListView.java:652)
+E/( 1553):   at widget.List.fillFrom(ListView.java:709)
+\end{lstlisting}
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+
+\question[5]
+使用正则表达式捕获下列URL的协议（Protocol，如http等）、端口、域名（domain name）等信息：
+\begin{lstlisting}
+ftp://portal.sjtu.edu.cn:2021/my_secret/life_changing_plans.pdf
+https://cbb.sjtu.edu.cn/course/regex/introduction#section
+file://localhost:4040/tgz_files
+https://s3cur3-server.com:9999/
+market://search/angry%20birds
+\end{lstlisting}
+\begin{solution}
+\vspace{2in}
+\end{solution}
+
+
+\end{questions}
+
+\end{CJK*}
+\end{document}
