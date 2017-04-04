@@ -1,0 +1,1081 @@
+\documentclass[red]{beamer}
+
+\mode<presentation>{
+%\usetheme{Goettingen}
+\usetheme{Madrid}
+\usecolortheme{default}
+}
+
+\usepackage{CJK}
+\usepackage{graphicx}
+\usepackage{amsmath, amsopn}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{url}
+\usepackage{color}
+\usepackage{times}
+\usepackage{xcolor}
+\usepackage[formats]{listings}
+\lstset{
+language=bash,
+keywordstyle=\color{blue!70}\bfseries,
+basicstyle=\color{black}\ttfamily\scriptsize,
+commentstyle=\color{red}\ttfamily,
+showspaces=false,
+showstringspaces=false,
+tabsize=3,
+showtabs=true,
+columns=fullflexible,
+frame=true,
+rulesepcolor=\color{red!20!green!20!blue!20},
+breaklines=true,
+numbersep=5pt}
+
+\lstdefineformat{awk}
+{
+  \{=\newline\string\newline\indent,%
+  \}=\newline\noindent\string\newline,%
+  ;=[\ ]\string\space,%
+}
+
+\newcommand*{\caret}{%
+  \begingroup
+    \fontencoding{T1}%
+    \fontfamily{qcr}% TeX Gyre Cursor
+    %\fontfamily{pcr}% Courier
+    \selectfont
+    \string^%
+  \endgroup
+}
+\lstdefinestyle{caret}{
+  basicstyle=\ttfamily\color{blue},
+  literate={^}{\caret}{1},
+}
+\newcommand*{\lstverb}{\lstinline[style=caret]}
+
+\setbeamertemplate{itemize/enumerate/description body begin}{\footnotesize}
+\setbeamertemplate{itemize/enumerate/description subbody begin}{\scriptsize}
+
+\title[BI296-Lec04]{\tiny{BI296: Linux and Shell Programming}\\
+\Large{Lecture 04: Bash Scripting}}
+\author[Maoying Wu]{Maoying,Wu\\
+{\scriptsize ricket.woo@gmail.com}}
+\institute[CBB] % (optional, but mostly needed)
+{
+  \inst{}
+  Dept. of Bioinformatics \& Biostatistics\\
+  Shanghai Jiao Tong University
+}
+\date{Spring, 2017}
+
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Next we will talk about ...}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+\frame{\titlepage}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Lecture Outline}
+\begin{itemize}
+	\item Bash Programming (BASH脚本编程)
+	\begin{itemize}
+		\item Bash: Introuction （BASH发展历史与相关概念）
+		\item Types of Variables (变量声明与定义)
+		\item Conditional Statements and Flow Control（条件结构和流程控制）
+		\item Command Line: Arguments (命令行)
+		\item BASH Functions (函数的定义)
+		\item Built-in Variables and Functions (内置变量与函数)
+	\end{itemize}
+	\vspace{0.2in}
+	\item Applications of BASH（BASH应用案例）
+\end{itemize}
+\end{frame}
+
+\section{bash: an introduction}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{The first BASH scripts}
+\begin{block}{\centering greeting.sh}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+# This is the first bash implementation.
+# Scriptname: greetings.sh
+# Written by: Ricky Woo (ricket.woo@gmail.com)
+echo -e "What's your name and your age: "
+read name age
+echo -e "I'm $name, and I'm $age years old."
+read
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Run the script file}
+\begin{lstlisting}[language=bash]
+# grant the executable permission
+chmod u+x greeting.sh
+# run the script
+./greeting.sh
+bash greeting.sh
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Interpretation of BASH scripts}
+\begin{block}{\centering greeting.sh}
+\begin{lstlisting}[language=bash]
+#!/bin/bash
+# This is the first bash implementation.
+# Scriptname: greetings.sh
+# Written by: Ricky Woo (ricket.woo@gmail.com)
+echo -e "What's your name and your age: "
+read name age
+echo -e "I'm $name, and I'm $age years old."
+read
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Interpretation}
+\begin{itemize}
+	\item \lstinline{#!/bin/bash}: Shebang to indicate the command 
+		to interpret the following scripts.
+	\item \lstinline{#}: Comments (注释).
+	\item \lstinline{$name}: Variable substitution (变量替换).
+	\item \lstinline{read}: Get the variable value interactively 
+		(交互式变量赋值). 
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Supporting Shells: Types and Descriptions}
+\begin{itemize}
+	\item The default shell for each user is defined in 
+		\texttt{/etc/passwd}.
+	\vspace{0.2in}
+	\item Described in the file \texttt{/etc/shells}.
+	\begin{itemize}
+		\item \texttt{sh}: Bourne Shell, a light-weighted shell (UNIX)
+		\item \texttt{ksh}: Korn shell, superset of \texttt{sh}
+		\item \texttt{csh}: Berkeley UNIX C-shell
+		\item \texttt{tcch}: An enhanced but completely compatible 
+			version of \texttt{csh}.
+		\item \texttt{bash}: Bourne Again SHell， superset of \texttt{sh}, 
+			\texttt{csh}
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{BASH}
+\begin{itemize}
+	\item Bourne Again SHell
+	\item In memory of Stephen Bourne (Author of Bourne Shell)
+	\item \emph{de facto} standard for shell scripting on most 
+		flavors of UNIX
+	\item \texttt{sh}-compatible
+	\item Derive some useful features from \texttt{ksh} as well 
+		as \texttt{csh} 
+\end{itemize}
+\begin{block}{\centering When not to use bash}
+\begin{itemize}
+	\item Resource-intensive tasks (sorting, hashing, recursion, ...)
+	\item Heavy-duty math operations (floating-point arithmetic)
+	\item Precision calculations (use c++/fortran instead)
+	\item Cross-platform portability required (c/java instead)
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Variables: Declaration (变量声明)}
+\begin{block}{\centering declare: syntax (语法)}
+\lstinline{declare [-aAfFgilrtux] [-p] [name[=value] ...]}
+\begin{itemize}
+\footnotesize
+	\item \texttt{-a/-A}: indexed/associative array (索引/关联数组); 
+		\texttt{-f/-F}: function body/name (函数实体/函数名); \texttt{i}: integer (整数)
+	\item \texttt{-l/-u}: lowercase/uppercase (小写/大写字母)
+	\item \texttt{-r}: read-only (只读); \texttt{-g}: global (全局变量)
+\end{itemize}
+\end{block}
+\begin{block}{\centering declare: examples (示例)}
+\begin{lstlisting}
+# `int` is an integer variable
+declare -i int
+# `arr` is an indexed array
+declare -a arr
+# `Arr` is an associative array
+declare -A Arr
+# `ro` is a read-only variable
+declare -r ro
+# `func` is a function
+declare -f func
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Variables: Definitions (变量定义)}
+\centering{\texttt{\underline{name}\textcolor{red}{=}\underline{value}}}
+\begin{block}{\centering Variable Names (变量命名)}
+\begin{itemize}
+	\item \underline{name}=\lstverb{/^[A-Za-z_][A-Za-z0-9_]*$/}
+	\item \textcolor{red}{Use interpretable variable names.}
+\end{itemize}
+\end{block}
+\begin{block}{\centering Variable Assignment (变量赋值)}
+\begin{itemize}
+	\item No space is allowed akin to the \textcolor{red}{=} operator.
+	\item \textcolor{red}{Use double quotes to enclose the \underline{value}}.
+\end{itemize}
+\end{block}
+\begin{block}{\centering Examples (变量定义的例子)}
+\begin{lstlisting}
+# `int` is an integer, 2
+declare -i int="8/3"
+echo ${int}
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Built-in Variables (内置变量)}
+\begin{table}[ht]
+\scriptsize
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{lll}
+\hline
+\textbf{Variables} & \textbf{Description}\\
+\hline
+\lstverb|$PATH| & the directories of executable commands.\\
+\lstverb|$MANPATH| & the directories of manual pages.\\
+\lstverb|$FS| & the field separator, default " ".\\
+\lstverb|$PS1, $PS2, $PS3| & the prompt.\\
+\lstverb|$PWD, $OLDPWD| & the current/previous working directory.\\
+\lstverb|$SHELL| & the default shell for current user.\\
+\lstverb|$USER, $USERNAME, $LOGNAME| & the current user name.\\
+\lstverb|$HOSTNAME| & the MACHINE name.\\
+\lstverb|$HOME| & the home directory for the current user.\\
+\lstverb|$?| & the return code of the last command issued.\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Variable Manipulation}
+\begin{block}{}
+\begin{lstlisting}
+FILEPATH=/path/to/my/output.lis
+echo $FILEPATH
+echo ${FILEPATH%t*}  # non-greedy tail-truncation
+echo ${FILEPATH%%t*} # greedy tail-truncation
+echo ${FILEPATH#*/}  # non-greedy head-truncation
+echo ${FILEPATH##*/} # greedy head-truncation
+echo ${x-5}; echo ${x:-5} # set default value
+echo ${x=3}; echo ${x:=3} # set default value
+echo ${x+7}; echo ${x:+7} # set default value
+echo ${t:?undefined}
+dna="ACCTAGGACG"; echo ${dna:3:4} # substring
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Exercise: Variables}
+\begin{enumerate}
+	\item Which of the following variable names are not legal? If not, tell why.
+	\begin{itemize}
+		\item \lstinline{3x5, x=1, x+, wt-5, _xyz, #tt, CMT, echo, if, $test}
+	\end{itemize}
+	\vspace{0.2in}	
+	\item Output the results.
+	\begin{lstlisting}
+#!/bin/bash
+num1=3;num2=5
+sum=$num1+$num2; echo ${sum} # sum?
+declare -i sum=$num1+$num2; echo ${sum} # sum?
+diff=$num2-$num1; echo ${diff} # diff?
+declare -i diff=$num2-$num1; echo ${diff} # diff?
+prod=$num1*$num2; echo ${prod} # product?
+declare -i prod=$num1*$num2; echo ${prod} # product?
+div=$num2/$num1; echo ${div} # division?
+declare -i div=$num2/$num1; echo ${div} # division?
+	\end{lstlisting}
+\end{enumerate}
+\end{frame}
+
+\section{flow control}
+
+\subsection{conditional statements}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Testing Files (文件的检验)}
+\begin{table}[ht]
+\tiny
+\renewcommand\arraystretch{1.2}
+\begin{tabular}{lll}
+\hline
+\textbf{Expression} & \textbf{Description}\\
+\hline
+\lstverb|[ -a FILE ]| & TRUE if FILE exists (存在性).\\
+\lstverb|[ -b FILE ]| & TRUE if FILE is a block device file (块设备).\\
+\lstverb|[ -c FILE ]| & TRUE if FILE is character device file (字符设备).\\
+\lstverb|[ -d FILE ]| & TRUE if FILE is a directory (目录).\\
+\lstverb|[ -e FILE ]| & TRUE if FILE exists (存在).\\
+\lstverb|[ -f FILE ]| & TRUE if FILE is a regular file (普通文件).\\
+\lstverb|[ -g FILE ]| & TRUE if FILE SGID bit is set (SGID).\\
+\lstverb|[ -h FILE ]| & TRUE if FILE is a symbolic link (符号链接).\\
+\lstverb|[ -k FILE ]| & TRUE if FILE sticky bit is set (粘附位).\\
+\lstverb|[ -p FILE ]| & TRUE if FILE is a named pipe (FIFO,管道文件).\\
+\lstverb|[ -r FILE ]| & TRUE if FILE is readable (可读).\\
+\lstverb|[ -s FILE ]| & TRUE if FILE size is greater than 0 (非空).\\
+\lstverb|[ -t FD ]| & TRUE if FILE DESCRIPTOR FD refers to a terminal (终端).\\
+\lstverb|[ -u FILE ]| & TRUE if FILE SUID bit is set (SUID).\\
+\lstverb|[ -w FILE ]| & TRUE if FILE is writable (可写).\\
+\lstverb|[ -x FILE ]| & TRUE if FILE is executable (可执行).\\
+\lstverb|[ FILE1 -nt FILE2 ]| & TRUE if FILE1 is newer than FILE2 (新).\\
+\lstverb|[ FILE1 -ot FILE2 ]| & TRUE if FILE1 is older than FILE2 (旧).\\
+\lstverb|[ FILE1 -ef FILE2 ]| & TRUE if FILE1 and FILE2 refers to the same (同).\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Test of strings and numbers (字符串和数值的检验)}
+\begin{table}[ht]
+\tiny
+\renewcommand\arraystretch{1.2}
+\begin{tabular}{lll}
+\hline
+\textbf{Expression} & \textbf{Description}\\
+\hline
+\lstverb|[ -o OPTNAME ]| & TRUE if option OPTNAME is enabled (选项).\\
+\lstverb|[ -z STRING ]| & TRUE if STRING is of zero-length (空串).\\
+\lstverb|[ -n STRING ]| & TRUE if STRING is non-null (非空).\\
+\lstverb|[ STRING ]| & TRUE if STRING is of non-zero length (非空).\\
+\lstverb|[ STRING1 == STRING2 ]| & TRUE if two strings are equal (相等).\\
+\lstverb|[ STRING1 != STRING2 ]| & TRUE if two strings are not equal (不等).\\
+\lstverb|[ STRING1 < STRING2 ]| & TRUE if STRING1 is lexically less than STRING2.\\
+\lstverb|[ STRING1 > STRING2 ]| & TRUE if STRING1 is lexically greater than STRING2.\\
+\lstverb|[ ARG1 op ARG2 ]| & Arithmetic binary comparison (数值比较).\\
+& \texttt{op=(-eq | -ne | -lt | -le | -ge | -gt)}\\
+\lstverb|[ !EXPR ]| & TRUE if EXPR is FALSE (逻辑反).\\
+\lstverb|[ (EXPR) ]| & Returns the value of EXPR.\\
+\lstverb|[ EXPR1 -a EXPR2 ]| & Logical AND (逻辑与).\\
+\lstverb|[ EXPR1 -o EXPR2 ]| & Logical OR (逻辑或).\\
+\hline
+\end{tabular}
+\end{table}
+\end{frame}
+
+\subsection{if statement}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Conditional Statement: \texttt{if}}
+\begin{block}{\centering Syntax}
+\begin{lstlisting}
+if [ cond_statement1 ]; then
+  do_something
+elif [ cond_statement2 ]; then
+  do_other_thing
+else
+  do_else_thing
+fi
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Example}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily,indentation=true]
+#!/bin/bash
+read -p "Please input a score: " score
+if [ $score -gt 90 ]; then
+  echo "You got A"
+elif [ $score -gt 75 ]; then
+  echo "You got B"
+elif [ $score -gt 60 ]; then
+  echo "You got C"
+else
+  echo "You failed"
+fi
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Three Conditional Expressions}
+\begin{table}[ht]
+\tiny
+\renewcommand\arraystretch{1.6}
+\begin{tabular}{lccc}
+\hline
+ & \lstverb|[ EXPR ]| & \lstverb|[[ EXPR ]]| & \lstverb|test EXPR|\\
+\hline
+\textbf{Word splitting} & Yes & No & Yes\\
+\textbf{Pathname expansion} & Yes & No & Yes\\
+\textbf{Pattern globs} & No & Yes & No\\ 
+\hline
+\end{tabular}
+\end{table}
+\begin{columns}[t]
+\column{0.50\textwidth}
+\begin{block}{\centering\scriptsize work splitting: using double quotes}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+var="split word";
+[ $var == "split word" ]; echo $?  # ERROR
+[ "$var" == "split word" ]; echo $? # WORK
+[[ $var == "split word" ]]; echo $? # WORK
+[[ "$var" == "split word" ]]; echo $? # WORK
+test $var == "split word"; echo $? # ERROR
+test "$var" == "split word"; echo $? # WORK
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering\scriptsize pathname expansion}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+[ "./lec4.tex" -ef ./lec4.te* ]; echo $?
+[[ "./lec4.tex" -ef ./lec4.te* ]]; echo $?
+test "./lec4.tex" -ef ./lec4.te*; echo $?
+\end{lstlisting}
+\end{block}
+\column{0.50\textwidth}
+\begin{block}{\centering\scriptsize Pattern globbing}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
+[ "expression" == expr* ]; echo $?
+[[ "expression" == expr* ]]; echo $?
+test "expression" == expr*; echo $?
+\end{lstlisting}
+\end{block}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{The Other Conditional Statements}
+\begin{block}{\centering \texttt{if..then..elif..then..else..fi}}
+\begin{lstlisting}
+if test "$(whoami)" == "root"; then
+  echo "You are using a privileged account"
+  exit 1
+fi
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Equivalent \texttt{\&\&} and \texttt{||} }
+\begin{lstlisting}
+test "$(whoami)" != "root" && (echo "you are using a non-privileged account"; exit 1)
+test "$(whoami)" == "root" || echo "Please verify that you have the super-user privilege."
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{case...in...esac construct}
+\begin{columns}[t]
+\column{0.30\textwidth}
+\begin{block}{\centering Syntax}
+\begin{lstlisting}
+case var in
+val1)
+  statement1
+;;;
+val2)
+  statement2
+;;;
+*)
+  statement3
+;;;
+esac
+\end{lstlisting}
+\end{block}
+\column{0.70\textwidth}
+\begin{block}{\centering Examples}
+\begin{lstlisting}
+#!/bin/bash
+echo "Enter your favorite color: "
+read color
+case $color in 
+r*|R*)
+  echo "Your favorite color is red."
+;;;
+b*|B*)
+  echo "Your favorite color is blue."
+;;;
+g*|G*)
+  echo "Your favorite color is green."
+;;;
+*)
+  echo "The color you entered is invalid."
+;;;
+esac
+\end{lstlisting}
+\end{block}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{select construct: menu}
+\begin{lstlisting}
+#!/bin/bash
+PS3="Choose your favorite dish (q to exit): "
+select dish in "Roast Duck" "Mapo Tofu" "Sweet and Sour Ribs"
+do
+  case $dish in 
+  R*)
+    echo "You may be from Beijing."
+  ;;
+  M*)
+    echo "You may be from Sichuan."
+  ;;
+  S*)
+    echo "You may be from Shanghai."
+  ;;
+  q)
+    break
+  ;;
+  *)
+    echo "Let me guess."
+  ;;
+  esac
+  break
+done
+\end{lstlisting}
+\end{frame}
+
+\subsection{loop statement}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{while loop}
+\begin{block}{\centering Syntax}
+\begin{lstlisting}
+while condition
+do
+  do_something
+done
+\end{lstlisting}
+\end{block}
+\begin{block}{Example}
+\begin{lstlisting}
+#!/bin/bash
+IFS=":"
+while read f1 f2 f3 f4 f5 f6 f7
+do
+  if [ "$f7" == "/sbin/nologin" ]; then
+    echo "$f1 cannot login to the system."
+  fi
+done < /etc/passwd
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{General for loop}
+\begin{block}{\centering Syntax}
+\begin{lstlisting}
+for var in val-list
+do
+  do_something
+done
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Examples}
+\begin{lstlisting}
+#!/bin/bash
+# for1.sh
+declare -i j
+for i in `seq 20`
+do
+  j=$i%5
+  if [ $j -eq 0 ]; then
+    continue
+  fi
+  echo $i
+done
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{C-style for loop}
+\begin{block}{\centering Syntax}
+\begin{lstlisting}
+for ((start-condition;end-condition;loop-action))
+do
+	do_something
+done
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Examples}
+\begin{lstlisting}
+#!/bin/bash
+declare -i j
+for ((i=1;i<=20;i++))
+do
+  j=$i%5
+  if [ $j -eq 0 ]; then
+    continue
+  fi
+  echo $i
+done
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Exercise}
+\begin{enumerate}
+	\item Guess what the following scripts do.
+	\begin{lstlisting}
+#!/bin/bash
+# space.sh: A very simple test for checking disk space.
+space=`df -h | awk '{print $5}' | grep % | grep -v Use
+| sort -n | tail -1 | cut -d "%" -f1`
+alertvalue="80"
+if [ "$space" -ge "$alertvalue" ]; then
+  echo "At least one disk is nearly full!"
+else
+  echo "Disk space normal"
+fi
+	\end{lstlisting}
+\end{enumerate}
+\end{frame}
+
+\section{mathematical computing}
+
+\subsection{integer computation}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Four integer computing}
+\begin{enumerate}
+	\item \lstverb|declare -i|
+	\item \lstverb|(())|
+	\item \lstverb|expr|
+	\item \lstverb|let|
+\end{enumerate}
+\begin{block}{\centering Example}
+\begin{lstlisting}
+# declare
+declare -i int
+int=13%5
+echo $int
+#  (())
+x=3
+((x++))
+echo $x
+# expr
+expr 3 * 5
+# let
+let "x = x * 3"
+echo $x
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\subsection{float computation}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{floating computing}
+\begin{itemize}
+	\item The command \texttt{bc} does help.
+\end{itemize}
+\begin{block}{\centering example}
+\begin{lstlisting}
+echo "3.3*4" | bc	# 13.2
+echo "2.1^4" | bc # 19.4
+echo "scale=2; (2.1^2)^2" | bc # 19.44
+echo "scale=1; (2.1^2)^2" | bc # 19.3
+echo "scale=2; 1.5*100/2" | bc # 75.00
+# computing with function
+echo "sqrt(2)" | bc
+echo "sqrt(2)" | bc -l
+echo "a(1)" | bc -l
+echo "scale=3; 4*a(1)" | bc
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{expr in string operation}
+\begin{block}{}
+\begin{lstlisting}
+# return the string length
+expr length "DNA transcription"
+# return the substring
+expr substr "DNA transcription" 5 13
+# return the index
+expr index "DNA transcription" 'c'
+# regex match
+expr account.doc : doc
+expr account.doc : acc
+# regex match
+expr 1234bcdf : ".*"
+# capture by regex
+expr abcdefgh : '...\(...\)..'
+# capture by regex
+expr account.doc : '\(.*\).doc'
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\section{command line}
+
+\subsection{positional parameters}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Positional Parameters}
+\begin{itemize}
+	\item \lstverb|$*| treats all positional parameters as a whole string.
+	\item \lstverb|$@| treats all positional parameters as an array.
+	\item \lstverb|$0| is the script file itself.
+	\item \lstverb|$1,$2,...| is the first, second, ... positional parameters.
+	\item \lstverb|$#|: number of positional parameters.
+\end{itemize}
+\begin{block}{\centering Examples}
+\begin{lstlisting}
+#!/bin/bash
+for i in {1..$#}; do
+  echo ${!i}
+done
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Exercise}
+\begin{enumerate}
+	\item Print all the positional arguments, one per line.
+	\item Compute the product of all the positional arguments.
+	\item If your arguments contain some float numbers, what to 
+		do then?
+\end{enumerate}
+\end{frame}
+
+
+\subsection{command-line options}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{options}
+\begin{itemize}
+	\item \lstinline{./test.sh -a -b -c}\\short options 
+		without argument (无参数短选项).
+	\vspace{0.2in}
+	\item \lstinline{./test.sh -abc}\\short options as above (同上).
+	\vspace{0.2in}
+	\item \lstinline{./test.sh -a arg -b -c}\\short options, where 
+		\lstverb|-a arg| needs argument, while \lstverb|-b| and 
+		\lstverb|-c| do not need argument (有/无参数短选项).
+	\vspace{0.2in}
+	\item \lstinline{./test.sh --a-long=arg --b-long}\\long options 
+		where \lstverb|--a-long=arg| requires argument, while 
+		\lstverb|--b-long| does not require argument (有/无参数长选项).
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{getopts}}
+\begin{itemize}
+	\item \lstverb|getopts| does not support long options.
+\end{itemize}
+\begin{block}{\centering Example}
+\begin{lstlisting}
+#!/bin/bash
+# testoptions.sh
+# ./testoptions.sh -a something -bc other-stuff
+while getopts "a:bc" arg # colon indicates `a' requires argument
+do
+  case $arg in
+  a)
+    echo "a's arg: $OPTARG" ;;
+  b)
+    echo "b" ;;
+  c)
+    echo "c" ;;
+  ?)
+    echo "unknown argument"; exit 1 ;;
+  esac
+done
+echo "The argument is at $OPTIND"
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{\texttt{getopt}: supports long options}
+\begin{lstlisting}
+#!/bin/bash
+# testlongopts.sh
+# ./testlongopts.sh -a arg1 'arg2' --c-long 'wow!*\?' -cmore -b " very long "
+TEMP=`getopt -o ab:c:: --long a-long,b-long:,c-long:: \
+              -n 'testlongopts.sh' -- "$@"`
+if [ $? != 0 ]; then echo "Terminating..." >&2 ; exit 1 ; fi
+# `set' will reorder the parameter  
+eval set -- "$TEMP"
+while true ; do
+  case "$1" in
+    -a|--a-long) echo "Option a"; shift ;;
+    -b|--b-long) echo "Option b, argument \`$2'" ; shift 2 ;;
+    -c|--c-long)
+      case "$2" in 
+        "") echo "Option c, no argument"; shift 2 ;;
+        *) echo "Option c, argument \`$2'" ; shift 2 ;;
+      esac ;;
+    --) shift ; break ;;
+    *) echo "Internal error!" ; exit 1 ;;
+  esac
+done
+echo "Remaining arguments: "
+for arg do echo '--> '"\`$arg'" ; done
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Exercise}
+\begin{enumerate}
+	\item As a simple exercise, write a shell script that 
+prints the file type for each file passed as an 
+argument to the script. Here is an example:
+\begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+$ ./ftypes.sh ftypes.sh .emacs .bashrc public_html
+ftypes.sh: Bourne-Again shell script text executable
+.emacs: Lisp/Scheme program text
+.bashrc: ASCII English text, with very long lines
+public_html: symbolic link to `www'
+\end{lstlisting}
+\end{enumerate}
+\end{frame}
+
+\section{functions}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Functions: Definition}
+\begin{block}{\centering Function defintion (函数定义)}
+\begin{lstlisting}
+# function func_name() { commands; }
+function dir() {
+  target=${1:-.}
+  if [ -e $target ]; then
+    echo "List Directories in $target: ";
+    ls -l $target | awk '/^d/{print $NF}';
+  else
+    echo "$target not exists."
+    return -1
+  fi
+}
+\end{lstlisting}
+\end{block}
+\begin{block}{\centering Function call (函数调用)}
+\begin{lstlisting}
+#!/bin/bash
+read -p "Input the directory name: " dirname
+dir $dirname
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Variable Scopes (变量作用域)}
+\begin{itemize}
+	\item Local Variables (局部变量): \textbf{inside a function}
+	\item Global Variables (全局变量): \lstinline{declare -g name=val}
+	\item Environmental Variables (环境变量): \lstinline{export name=val}
+\end{itemize}
+\begin{block}{\centering Examples (示例)}
+\begin{lstlisting}
+#!/bin/bash
+function1() {
+  local func1var=20
+  echo "Within function1, \$func1var = $func1var."
+  function2
+}
+function2 () {
+  echo "Within function2, \$func1var = $func1var."
+}
+function1
+echo "Outside function, \$func1var = $func1var."
+exit 0
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{A little project: prime finder (1)}
+\begin{lstlisting}
+#!/bin/bash
+# SCRIPT: primefactors.sh
+# USAGE: primefactors.sh <Positive Integer>
+# PURPOSE: Produces prime factors of a given number
+####################################################
+# Argument checking
+####################################################
+if [ $# -ne 1 ]; then
+  echo "Usage: $0 <Positive Integer>"
+  exit 1
+fi
+expr $1 + 1 &>/dev/null
+if [ $? -ne 0 ]; then
+  echo "Sorry, you supplied a non-numerical value."
+  exit 1
+fi
+[ $1 -lt 2 ] && echo "Value < 2 are not prime numbers" && exit 1
+num=$1
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{A little project: prime finder (2)}
+\begin{lstlisting}
+########################################
+# Functions
+########################################
+# script to find prime number
+primenumber() {
+  primenum=$1
+  for ((cnt2=2;$((cnt2*cnt2))<=$primenum; cnt2++)); do
+    [ $((primenum%cnt2)) -eq 0 ] && return 1
+  done
+  return 0
+}
+primefind() {
+  primenumber $1 && echo "$1" && exit 0
+  for ((cnt1=$2;cnt1<=$1;$cnt1++)); do
+    primenumber $cnt1 && factorcheck $1 $cnt1 && break
+  done
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{A little project: prime finder (3)}
+\begin{lstlisting}
+factorcheck()
+{
+  prime=$2
+  newnum=$1
+  remainder=$((newnum%prime))
+
+  if [ $remainder -eq 0 ]; then
+    printf "%dx" $prime
+    newnum=$((newnum/prime))
+    primefind $newnum 2
+    return
+  else
+    let prime++
+    primefind $newnum $prime
+  fi
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{A little project: prime finder (4)}
+\begin{lstlisting}
+###############################################
+# main
+###############################################
+echo -n "Prime Factor of $1: "
+primefind $num 2
+print "\b\n"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Exercise}
+Explain why the final output is blank.
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily]
+#!/bin/bash
+OUTPUT="name1 ip ip status" # normally output of another command with multi line output
+
+if [ -z "$OUTPUT" ]
+then
+        echo "Status WARN: No messages from Hacker"
+        exit $STATE_WARNING
+else
+        echo "$OUTPUT"|while read NAME IP1 IP2 STATUS
+        do
+                if [ "$STATUS" != "Optimal" ]
+                then
+                        echo "CRIT: $NAME - $STATUS"
+                        echo $((++XCODE))
+                else
+                        echo "OK: $NAME - $STATUS"
+                fi
+        done
+fi
+
+echo $XCODE
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Indexed Arrays}
+\begin{itemize}
+	\item \lstverb|declare -a arrayname|
+	\item Only 1-dim array is allowed
+	\item Array Assignment
+	\begin{enumerate}
+		\item \lstverb|array=(val1 val2 val3 ... valN)|
+		\item \lstverb|array=([0]=val0 [1]=val1 ... [N]=valN)|
+		\item \lstverb|array[0]=val0; array[1]=val1; ...|
+	\end{enumerate}
+	\item Size: \lstverb|${#array[@]}, ${#array[*]}|
+	\item \lstverb|echo ${array[2]}|
+	\item \lstverb|echo ${array[@]:3:2}| 
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Associative Arrays}
+\begin{itemize}
+	\item \lstverb|declare -A Arrayname|
+	\item Array Definition
+	\begin{enumerate}
+		\item \lstverb|Array=([unix]=1 [windows]=2 [mac]=3)|
+		\item \lstverb|Array[unix]=1; Array[windows]=2; Array[mac]=3|
+	\end{enumerate}
+	\item Iterate over all keys:
+	\begin{lstlisting}
+for key in "${!Array[@]}"; do echo $key; done
+	\end{lstlisting}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile,containsverbatim]
+\frametitle{Summary}
+\begin{itemize}
+	\item Run script file: shebang (\lstverb|#!/bin/bash|)
+	\item Variable assignment (\lstverb|declare|) and 
+		destroy (\lstverb|unset|)
+	\item Conditional statement (\lstverb|[]|, 
+		\lstverb|[[]]|, \lstverb|test|)
+	\item \lstverb|if...fi| statement
+	\item \lstverb|for...do...done| statement
+	\item \lstverb|case...in...esac| statement
+	\item \lstverb|while...do...done| statement
+	\item Function definition (\lstverb|func(){...}|)
+	\item Positional parameters (\lstverb|$1,$*, $@|)
+	\item \lstverb|getopts| statement 
+\end{itemize}
+\end{frame}
+
+\end{CJK*}
+\end{document}
