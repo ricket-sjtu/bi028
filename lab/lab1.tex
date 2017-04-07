@@ -1,0 +1,84 @@
+\documentclass[12pt]{article}
+
+\usepackage{color}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+\usepackage{CJK}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{
+language=bash,
+keywordstyle=\color{blue!70}\bfseries,
+basicstyle=\ttfamily\footnotesize,
+commentstyle=\ttfamily\color{red},
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+columns=fullflexible,
+frame=no,
+rulesepcolor=\color{red!20!green!20!blue!20},
+breaklines=true}
+
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+\title{实验 1： Linux基本命令行操作}
+\author{}
+\date{}
+
+\maketitle
+
+
+\begin{enumerate}[(1)]
+	\item 以bio用户登录，在家目录下创建目录\lstinline{~/bi296/lab1commands}。
+		以后所有的上机工作都放在\lstinline{~/bi296}下。
+	\item 为该目录\lstinline{lab1commands}添加符号连接\lstinline{lab1}
+	\item 用\lstinline{tree}命令获取根目录\lstinline{/}下的两层文件目录
+		结构，将其重定向到一个文件\lstinline{directory_tree}中。
+	\item 用\lstinline{man hier}获取每个目录的基本信息，将其用\lstinline{vim}
+		写入文件\lstinline{directory_tree}中
+	\item 用\lstinline{man builtin}获取所有bash内置命令的列表，将其写入
+		文件\lstinline{builtins}，将其修改为每行一个命令的记录。将每个文件的功能
+		记入该文件。
+	\item 在目录下创建\lstinline{hello.sh}文件，内容为:  
+	\begin{lstlisting}
+#!/bin/bash
+echo "Hello, world"
+exit 0
+	\end{lstlisting}
+	\item 给\lstinline{hello.sh}文件增加执行权限，并删除其他用户的写权限，最终
+		以数字写出文件的权限，然后尝试运行该文件。
+	\item 写一个C程序，用GCC编译后查看产生的可执行文件，看看其文件类型与此前的可执行文件
+		有什么差异：
+	\begin{lstlisting}[language=c]
+#include <stdio.h>
+int main(){
+	printf("Hello, World!\n");
+	return 0;
+}
+	\end{lstlisting}
+	\item 从搜索引擎获取关于\texttt{bioinformatics}在wikipedia上的页面，将其源码
+		用\lstinline{vim}命令编辑为\lstinline{bioinformatics}，看看在vim下如何跳转
+		到末行，首行，行首、行末，如何在光标行下一行插入，如何复制5行，删除10行，查找
+		bioinformatics的字符，把bioinformatics替换为bioinfo science
+	\item 将当前\lstinline{bioinformatics}文件所属的用户修改为abc，组为root，写出命令。
+	\item 用\lstinline{touch}命令作用于该文件，修改的是文件的哪些时间戳？
+	\item 用\lstinline{find}查找linux系统下以log结尾，30天没有修改，大小大于20K同时具
+		有写权限的文件并备份到\lstinline{data/backup/}目录下。
+	\item 查找文件系统中所有具有setuid或setguid的文件，以及具有sticky-bit的目录，并将
+		列表分别输出到一个文件中，并说说这些文件都有什么样的特征。
+	\item 查找系统中所有的socket文件，说说这些文进都有什么样的扩展名，其对应的分别是什么？
+	\item 在当前目录下创建一个当天的日期作为目录名的文件夹(提示：当前日期表
+		示的方法为：\lstinline{date +%Y%m%d})
+	\item 如何查看文件内容，命令有哪些？如何查看文件第10行到30行？如何查看文件倒数第4行？
+	\item 查看linux服务器IP的命令，同时只显示包含ip所在的行打印出来。
+	\item 为计算机添加普通用户test，设定该用户的家目录并将该用户加入root组
+	\item 删除用户test，同时删除其目录。
+	\item 将文件夹lab1打包为lab1.tar.gz或者lab1.tar.bz2。
+\end{enumerate}
+
+到这里实验结束，相信你对命令行已经掌握了大部分了，还有不明白的，记住去问man。
+
+\end{CJK*}
+\end{document}

@@ -1,0 +1,107 @@
+\documentclass[12pt]{article}
+
+\usepackage{color}
+\usepackage{amsmath,amssymb}
+\usepackage{enumerate}
+\usepackage{CJK}
+\usepackage{xcolor}
+\usepackage{listings}
+\lstset{
+language=bash,
+keywordstyle=\color{blue!70}\bfseries,
+basicstyle=\ttfamily\footnotesize,
+commentstyle=\ttfamily\color{red},
+showspaces=false,
+showstringspaces=false,
+showtabs=false,
+columns=fullflexible,
+frame=no,
+rulesepcolor=\color{red!20!green!20!blue!20}
+}             
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+\title{上机实验2：挑战正则表达式}
+\author{}
+\date{}
+
+\maketitle
+
+\section{用户数据库管理}
+
+这里有一个用户数据库文件user，其格式是：
+\begin{quote}
+用户名:密码:用户标识(UID):组标识(GID):用户描述:主目录:登录Shell
+\end{quote}
+
+\begin{enumerate}[(1)]
+	\item 分别用grep，sed，awk找出登录shell为bash的用户。
+	\item 找出UID或GID是4位以上数字的用户。
+	\item 有个主目录在/var/spo??l下的用户，但不能肯定有几个o，找出满足条件的用户。
+	\item 已知有个用户名形如"mi...M"中间包含多个未知的mi，找出该用户。
+\end{enumerate}
+
+\section{普通文本分析}
+
+这里有个很乱的文本文件regex.txt，需要从中进行一些正则表达式分析：
+\begin{enumerate}[(1)]
+	\item 用grep查找其中的大写字母
+	\item 用grep查找其中的数字
+	\item 查找包含"the"的行，忽略大小写，统计次数
+	\item 统计不包含"the"的行数
+	\item 查找包含"tast"或"test"的行
+	\item 查找不包含"\#"的行
+	\item 查找"oog"但前面的字符不能为"g"或者"o"
+	\item 查找以"the"开头的行
+	\item 查找以字母"d"结束的行
+	\item 过滤掉空行
+	\item 过滤掉注释行，也就是以"\#"开头的行
+	\item 查找至少存在两个连续字符"e"的行
+	\item 查找字母"g"后面连接2-5个"o"且后面还有一个"g"的的行
+	\item 输出regex.txt的内容，同时打印行号，并删除2-5行
+	\item 同上，但删除第5行到最后一行
+	\item 在源文件中删除第1行
+	\item 在第2行前添加两行"test"，第3行后添加";;"行
+	\item 将2-5行的内容替换为"nothing but 2-5"
+	\item 只输出5-8行
+\end{enumerate}
+
+\section{获取本机IP地址}
+
+已知命令\lstinline{ifconfig}可以输出本机的网络信息，能否从中提取IP地址？
+
+
+\section{awk练习}
+
+有个文件competition.txt，里面记录的是红/蓝/绿三队队员的比赛得分情况。
+
+写一个awk脚本：
+\begin{enumerate}
+	\item 计算每个队员的平均得分
+	\item 计算每次比赛的平均得分
+	\item 计算每支队伍的平均得分
+\end{enumerate}
+
+\textcolor{red}{注意}：
+\begin{itemize}
+	\item 文件的首行是文件头，处理的时候该注意。
+	\item 如果某个得分为负值，说明该队员缺席了该比赛，记分时候应该忽略。
+	\item 输出结果时，字符串左对齐排列，占据10个字符；数值按右对齐排列，占据7个字符，小数为2位。
+	\item 你的脚本应该不局限于处理本文件。
+\end{itemize}
+
+
+\section{序列分析处理}
+
+这里有一个FASTA文件twoseqs.fa，包含两个序列。用awk写一个脚本
+\begin{enumerate}[(1)]
+	\item 计算每个序列的3-mer的发生率。所谓3-mer指的是序列中长度为3的子串，如在序列ACTGGACT中ACT的发生率为2。
+	\item 根据下式计算两序列的相似性得分：
+$$
+\textrm{score} = \exp(-\sum_i (\text{occ}_{1i} - \text{occ}_{2i}))
+$$
+\end{enumerate}
+
+
+\end{CJK*}
+\end{document}
