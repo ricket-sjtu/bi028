@@ -64,7 +64,7 @@ numbersep=5pt}
   Dept. of Bioinformatics \& Biostatistics\\
   Shanghai Jiao Tong University
 }
-\date{Spring, 2017}
+\date{Spring, 2018}
 
 \AtBeginSubsection[]
 {
@@ -78,19 +78,6 @@ numbersep=5pt}
 \begin{document}
 \begin{CJK*}{UTF8}{gbsn}
 \frame{\titlepage}
-
-\begin{frame}[containsverbatim]
-\frametitle{Quick Recaps}
-\begin{itemize}
-	\item File system: \lstinline{man hier, fdisk, du, df}
-	\item File permissions: \lstinline{chmod, chown, chattr}, r, w, x, s, t
-	\item File information: \lstinline{ls, file, stat}
-	\item File operation: \lstinline{cp, mv, rm, touch, vim, cat/tac/less/more, head/tail}
-	\item File types: \lstinline{ln}, -, d, l, c, b, s, p
-	\item Process control: \lstinline{ps, bg, fg, jobs, nohup, CTRL+z, CTRL+c}
-	\item Redirection and Piping
-\end{itemize}
-\end{frame}
 
 \section{Regular Expression}
 
@@ -763,7 +750,7 @@ ACCCGCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 \end{lstlisting}
 \end{block}
 \begin{block}{solution}
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}
 sed '/ˆ@/!d;s//>/;N' test.fastq > test.fasta
 \end{lstlisting}
 \end{block}
@@ -1121,11 +1108,10 @@ END {
 
 \begin{frame}[fragile,containsverbatim]
 \frametitle{Draw a histogram}
-\begin{lstlisting}[language=awk,format=awk]
+\begin{lstlisting}[language=awk,format=awk,basicstyle=\tiny\ttfamily]
 #!/bin/awk -f
 # histogram.awk
 # input: numbers between 0 and 100
-# output: histogram of deciles
 { x[int($1/10)]++ }
 END {
 	for (i=0; i < 10; i++)
@@ -1136,11 +1122,10 @@ function rep(n, s, t) {
 	return t
 }
 \end{lstlisting}
-\begin{block}{Run scripts}
-\begin{lstlisting}
+\begin{block}{\centering\scriptsize Run scripts}
+\begin{lstlisting}[basicstyle=\tiny\ttfamily]
 chmod u+x histogram.awk
 awk '
-# generate random integers
 BEGIN {
 	for (i=1; i<=200; i++) print int(100*rand())
 }'  | ./histogram.awk
